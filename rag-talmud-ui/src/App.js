@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
-import data from "./data/data.json";
-
+import { X, RefreshCw } from "lucide-react";
 
 const COLORS = [
   "bg-red-50 border-red-200",
-  "bg-green-50 border-green-200", 
+  "bg-green-50 border-green-200",
   "bg-blue-50 border-blue-200",
   "bg-yellow-50 border-yellow-200",
   "bg-purple-50 border-purple-200",
@@ -13,27 +12,70 @@ const COLORS = [
   "bg-orange-50 border-orange-200"
 ];
 
+// Helper to generate mock answers
+const generateMockAnswer = (remainingSnippets, mockAnswers) => {
+  const snippetCount = Object.keys(remainingSnippets).length;
+
+  if (snippetCount === 0) return mockAnswers["0"];
+  if (snippetCount <= 2) return mockAnswers["1-2"];
+  if (snippetCount === 3) return mockAnswers["3"];
+  return mockAnswers["4+"];
+};
+
 function App() {
   const [content, setContent] = useState({
     query: "",
     snippets: {},
     answer: ""
   });
+  const [isRegenerating, setIsRegenerating] = useState(false);
 
+  // Load data.json from public folder
   useEffect(() => {
-    setContent(data);
+    fetch("./data.json")
+      .then((res) => res.json())
+      .then((data) => {
+        setContent(data);
+      })
+      .catch((err) => {
+        console.error("Error loading data.json:", err);
+      });
   }, []);
 
+  const deleteSnippet = (refId) => {
+    setContent((prev) => {
+      const newSnippets = { ...prev.snippets };
+      delete newSnippets[refId];
+      return {
+        ...prev,
+        snippets: newSnippets
+      };
+    });
+  };
+
+  const regenerateAnswer = async () => {
+    setIsRegenerating(true);
+
+    // Mock API delay
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    const newAnswer = generateMockAnswer(content.snippets, content.mockAnswers);
+    setContent((prev) => ({
+      ...prev,
+      answer: newAnswer
+    }));
+
+    setIsRegenerating(false);
+  };
+
   const snippetEntries = Object.entries(content.snippets || {});
-  
-  // Create positioned snippets for Talmud-style layout
+
   const positionedSnippets = snippetEntries.map(([refId, snippets], idx) => ({
     refId,
     snippets,
     color: COLORS[idx % COLORS.length]
   }));
 
-  // Split snippets into different sides
   const leftSnippets = positionedSnippets.slice(0, Math.ceil(positionedSnippets.length / 4));
   const topSnippets = positionedSnippets.slice(Math.ceil(positionedSnippets.length / 4), Math.ceil(positionedSnippets.length / 2));
   const rightSnippets = positionedSnippets.slice(Math.ceil(positionedSnippets.length / 2), Math.ceil(3 * positionedSnippets.length / 4));
@@ -42,13 +84,18 @@ function App() {
   const renderSnippetBox = ({ refId, snippets, color }) => (
     <div
       key={refId}
-      className={`${color} border-2 p-3 text-xs leading-tight h-full flex flex-col`}
-      style={{
-        fontSize: '11px',
-        lineHeight: '1.3'
-      }}
+      className={`${color} border-2 p-3 text-xs leading-tight h-full flex flex-col relative group`}
+      style={{ fontSize: "11px", lineHeight: "1.3" }}
     >
-      <h3 className="font-bold text-xs mb-2 text-gray-800 border-b border-gray-300 pb-1">
+      <button
+        onClick={() => deleteSnippet(refId)}
+        className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 z-10"
+        title="Delete this reference"
+      >
+        <X size={12} />
+      </button>
+
+      <h3 className="font-bold text-xs mb-2 text-gray-800 border-b border-gray-300 pb-1 pr-6">
         Reference: {refId}
       </h3>
       <div className="flex-1 overflow-y-auto">
@@ -66,53 +113,53 @@ function App() {
 
   return (
     <div className="h-screen w-screen bg-gradient-to-br from-amber-50 to-orange-50 overflow-hidden">
-      {/* Main Talmud-style grid layout */}
       <div className="h-full w-full grid grid-cols-5 grid-rows-5 gap-0 p-4">
-        
-        {/* Top row */}
         <div className="col-span-1 row-span-1"></div>
-        <div className="col-span-3 row-span-1 flex gap-1">
-          {topSnippets.map(renderSnippetBox)}
-        </div>
+        <div className="col-span-3 row-span-1 flex gap-1">{topSnippets.map(renderSnippetBox)}</div>
         <div className="col-span-1 row-span-1"></div>
-        
-        {/* Middle rows */}
-        <div className="col-span-1 row-span-3 flex flex-col gap-1">
-          {leftSnippets.map(renderSnippetBox)}
-        </div>
-        
-        {/* Center - Main content */}
+
+        <div className="col-span-1 row-span-3 flex flex-col gap-1">{leftSnippets.map(renderSnippetBox)}</div>
+
         <div className="col-span-3 row-span-3 bg-white border-4 border-amber-300 flex flex-col">
-          {/* Query section */}
           <div className="flex-1 p-4 border-b-2 border-amber-200">
-            <h1 className="text-lg font-bold mb-3 text-center text-amber-800 border-b border-amber-300 pb-2">
-              User Query
-            </h1>
+            <h1 className="text-lg font-bold mb-3 text-center text-amber-800 border-b border-amber-300 pb-2">User Query</h1>
             <div className="bg-amber-50 border border-amber-200 p-3 rounded text-sm text-gray-800 text-center leading-relaxed">
               {content.query}
             </div>
           </div>
-          
-          {/* Answer section */}
-          <div className="flex-1 p-4">
-<div
-  className="bg-amber-50 border border-amber-200 p-3 rounded text-sm text-gray-800 leading-relaxed overflow-y-auto h-full"
-  dangerouslySetInnerHTML={{ __html: content.answer }}
-></div>
+
+          <div className="flex-1 p-4 flex flex-col">
+              <div className="bg-amber-50 border border-amber-200 p-3 rounded text-sm text-gray-800 leading-relaxed overflow-y-auto flex-1">
+                {isRegenerating ? (
+                  <div className="flex items-center justify-center h-full text-amber-600">
+                    <RefreshCw size={20} className="animate-spin mr-2" />
+                    Regenerating answer based on available snippets...
+                  </div>
+                ) : (
+                  <div
+                    dangerouslySetInnerHTML={{ __html: content.answer }}
+                  />
+                )}
+              </div>
+            <div className="flex items-center justify-between mb-3">
+              <button
+                onClick={regenerateAnswer}
+                disabled={isRegenerating}
+                className="ml-4 bg-amber-600 hover:bg-amber-700 disabled:bg-amber-300 text-white px-3 py-1 rounded text-sm flex items-center gap-1 transition-colors"
+                title="Regenerate answer based on current snippets"
+              >
+                <RefreshCw size={14} className={isRegenerating ? "animate-spin" : ""} />
+                {isRegenerating ? "Regenerating..." : "Regenerate"}
+              </button>
+            </div>
           </div>
         </div>
-        
-        <div className="col-span-1 row-span-3 flex flex-col gap-1">
-          {rightSnippets.map(renderSnippetBox)}
-        </div>
-        
-        {/* Bottom row */}
+
+        <div className="col-span-1 row-span-3 flex flex-col gap-1">{rightSnippets.map(renderSnippetBox)}</div>
+
         <div className="col-span-1 row-span-1"></div>
-        <div className="col-span-3 row-span-1 flex gap-1">
-          {bottomSnippets.map(renderSnippetBox)}
-        </div>
+        <div className="col-span-3 row-span-1 flex gap-1">{bottomSnippets.map(renderSnippetBox)}</div>
         <div className="col-span-1 row-span-1"></div>
-        
       </div>
     </div>
   );

@@ -1,0 +1,76 @@
+{
+  "query": "How the solar eclipse can affect mental health?",
+  "answer": "The effects of a solar eclipse on mental health depend on one's personal beliefs in whether stellar phenomena can have such an effect. People who believe in astrology report things like agitation, unusual dreams, sudden bursts of creativity, and even relationship difficulties[<a href=\"https://chatnoir-webcontent.chatnoir.eu/?index=msmarco-v2.1-segmented&trec-id=msmarco_v2.1_doc_39_386975294%235_843851629\">3</a>]. Also mood changes, dizziness, tiredness, and interference with overall mental well-being are reported[<a href=\"https://chatnoir-webcontent.chatnoir.eu/?index=msmarco-v2.1-segmented&trec-id=msmarco_v2.1_doc_12_541815956%2314_978601115\">4</a>, <a href=\"https://chatnoir-webcontent.chatnoir.eu/?index=msmarco-v2.1-segmented&trec-id=msmarco_v2.1_doc_12_541815956%2315_978603660\">5</a>, <a href=\"https://chatnoir-webcontent.chatnoir.eu/?index=msmarco-v2.1-segmented&trec-id=msmarco_v2.1_doc_51_318853832%235_734634698\">6</a>]. Although major decisions are discouraged during this time, eclipse are said to also foster creativity and self-expression, helping individuals cope with feelings of change and lack of control[<a href=\"https://chatnoir-webcontent.chatnoir.eu/?index=msmarco-v2.1-segmented&trec-id=msmarco_v2.1_doc_12_541815956%2315_978603660\">5</a>]. Furthermore, these events may inspire evaluations of one\u2019s life purpose and lead to the rapid manifestation of thoughts[<a href=\"https://chatnoir-webcontent.chatnoir.eu/?index=msmarco-v2.1-segmented&trec-id=msmarco_v2.1_doc_04_807909327%233_1707072303\">8</a>]. It is important to note that astrology has no scientific backing, so that any advice given in this context must be taken considered with caution. It is perhaps best to carry out more in-depth research on reputable health sites or the medical literature before basing any decision on the present outcome",
+  "snippets": {
+    "ref_id": [
+      {
+      "text": "Solar eclipses have been historically associated with significant psychological impacts in various cultures.",
+      "source": "Journal of Cultural Astronomy",
+      "page": "Page 123"
+      },
+      {
+      "text": "Studies suggest that belief in astrological phenomena can influence mental well-being during celestial events.",
+      "source": "Psychology Today",
+      "page": "Page 45"
+      }
+    ],
+    "ref_id_2": [
+      {
+      "text": "Astrological interpretations of solar eclipses often emphasize emotional turbulence and self-reflection.",
+      "source": "Astrology and Mental Health",
+      "page": "Page 67"
+      }
+    ],
+    "ref_id_3": [
+      {
+      "text": "Research indicates that cultural narratives around eclipses can shape individual experiences and perceptions.",
+      "source": "Cultural Psychology Review",
+      "page": "Page 89"
+      }
+    ],
+    "ref_id_4": [
+      {
+      "text": "Some individuals report heightened creativity and introspection during solar eclipses.",
+      "source": "Creative Minds Journal",
+      "page": "Page 101"
+      },
+      {
+      "text": "Mood changes and feelings of unease are commonly reported during eclipses, particularly among those who follow astrological beliefs.",
+      "source": "Astrology and Mental Health",
+      "page": "Page 102"
+      },
+      {
+      "text": "Eclipses are often seen as opportunities for personal growth and reevaluation of life goals.",
+      "source": "Astrology and Mental Health",
+      "page": "Page 103"
+      }
+    ],
+    "ref_id_5": [
+      {
+      "text": "Medical experts recommend focusing on evidence-based practices for mental well-being during celestial events.",
+      "source": "Health and Wellness Journal",
+      "page": "Page 110"
+      }
+    ]
+  },
+  "commentary": [
+    {
+      "comment": "This is a fairly thoughtful response. Strengths: the student acknowledges both reported experiences (mood changes, creativity, dreams, agitation) and the role of personal beliefs. Importantly, they highlight that astrology has no scientific backing and recommend relying on reputable sources, showing critical thinking. Weaknesses: the answer is repetitive, not very concise, and mixes subjective claims with vague symptoms without clear distinction between evidence-based and belief-based effects. It would be stronger if it emphasized scientific findings more directly and structured the points more clearly.",
+      "grade": "B"
+    },
+    {
+      "comment": "I see where the first review was coming from, but it’s a bit too strict and undersells the student’s effort. The student did several things very well: They showed awareness of both cultural/astrological perspectives and scientific caution. They balanced possible effects (creativity, agitation, mood changes) with the disclaimer that astrology isn’t evidence-based. They ended with a sensible suggestion to consult reputable health sources. Yes, the response could be clearer and less repetitive, but for a student, this is a strong effort that shows critical thinking, awareness of different viewpoints, and some sensitivity to mental health. Those are important qualities.",
+      "grade": "A"
+    },
+    {
+      "comment": "The student’s answer does cover a range of possible effects and importantly mentions the lack of scientific support for astrology, which is good. However, as the first assessment pointed out, the explanation is repetitive and blends belief-based claims with actual mental health impacts without making a clear enough distinction. The structure is also loose, jumping between symptoms, astrology, and advice, which makes it harder to follow. While the critical note at the end is helpful, the bulk of the response leans too much on unverified claims rather than evidence.",
+      "grade": "B"
+    }
+  ],
+  "mockAnswers": {
+    "0": "No source material available to generate an answer. Please provide reference snippets to generate a comprehensive response.",
+    "1-2": "Based on limited available sources, there appears to be some connection between solar eclipses and mental health, though the evidence is primarily anecdotal. The relationship seems to depend heavily on individual beliefs and cultural context. For example, some studies suggest that belief in astrological phenomena can influence mental well-being during celestial events[<a href=\"https://chatnoir-webcontent.chatnoir.eu/?index=msmarco-v2.1-segmented&trec-id=msmarco_v2.1_doc_12_541815956%2314_978601115\">4</a>].",
+    "3": "Solar eclipses may have psychological effects that vary significantly among individuals. Cultural and astrological beliefs appear to play a role in how people experience these celestial events, with some reporting emotional changes and others focusing on scientific explanations. For instance, research indicates that cultural narratives around eclipses can shape individual experiences and perceptions[<a href=\"https://chatnoir-webcontent.chatnoir.eu/?index=msmarco-v2.1-segmented&trec-id=msmarco_v2.1_doc_51_318853832%235_734634698\">6</a>].",
+    "4+": "The effects of solar eclipses on mental health appear to be multifaceted, involving both psychological and cultural dimensions. While some individuals report various emotional and mental changes during eclipses, these effects seem strongly influenced by personal beliefs, cultural narratives, and astrological interpretations. For example, eclipses are often seen as opportunities for personal growth and reevaluation of life goals[<a href=\"https://chatnoir-webcontent.chatnoir.eu/?index=msmarco-v2.1-segmented&trec-id=msmarco_v2.1_doc_12_541815956%2315_978603660\">5</a>]. It's important to approach such claims with scientific skepticism while acknowledging the subjective experiences people may have."
+  }
+}
