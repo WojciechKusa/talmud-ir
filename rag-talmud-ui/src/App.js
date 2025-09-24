@@ -95,9 +95,10 @@ function App() {
           
           {/* Answer section */}
           <div className="flex-1 p-4">
-            <div className="bg-amber-50 border border-amber-200 p-3 rounded text-sm text-gray-800 leading-relaxed overflow-y-auto h-full">
-              {content.answer}
-            </div>
+<div
+  className="bg-amber-50 border border-amber-200 p-3 rounded text-sm text-gray-800 leading-relaxed overflow-y-auto h-full"
+  dangerouslySetInnerHTML={{ __html: content.answer }}
+></div>
           </div>
         </div>
         
