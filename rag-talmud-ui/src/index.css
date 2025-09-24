@@ -15,3 +15,26 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* Custom prose link styling */
+.custom-prose a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem; /* space between 🔗 and text */
+  background-color: #fef3c7; /* amber-100 */
+  color: #92400e; /* amber-700 */
+  font-weight: 500;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  text-decoration: none;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.custom-prose a::before {
+  content: "🔗";
+}
+
+.custom-prose a:hover {
+  background-color: #fde68a; /* amber-200 */
+  color: #78350f; /* amber-900 */
+}

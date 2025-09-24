@@ -120,40 +120,49 @@ function App() {
 
         <div className="col-span-1 row-span-3 flex flex-col gap-1">{leftSnippets.map(renderSnippetBox)}</div>
 
-        <div className="col-span-3 row-span-3 bg-white border-4 border-amber-300 flex flex-col">
-          <div className="flex-1 p-4 border-b-2 border-amber-200">
-            <h1 className="text-lg font-bold mb-3 text-center text-amber-800 border-b border-amber-300 pb-2">User Query</h1>
-            <div className="bg-amber-50 border border-amber-200 p-3 rounded text-sm text-gray-800 text-center leading-relaxed">
-              {content.query}
-            </div>
-          </div>
+<div className="col-span-3 row-span-3 bg-white border-4 border-amber-300 flex flex-col rounded-lg shadow-sm">
+  {/* Query Box */}
+  <div className="p-4 border-b-2 border-amber-200">
+    <input
+      type="text"
+      value={content.query}
+      // disabled
+      className="w-full bg-white border border-amber-300 p-3 rounded-md text-sm text-gray-900 shadow-sm"
+    />
+  </div>
 
-          <div className="flex-1 p-4 flex flex-col">
-              <div className="bg-amber-50 border border-amber-200 p-3 rounded text-sm text-gray-800 leading-relaxed overflow-y-auto flex-1">
-                {isRegenerating ? (
-                  <div className="flex items-center justify-center h-full text-amber-600">
-                    <RefreshCw size={20} className="animate-spin mr-2" />
-                    Regenerating answer based on available snippets...
-                  </div>
-                ) : (
-                  <div
-                    dangerouslySetInnerHTML={{ __html: content.answer }}
-                  />
-                )}
-              </div>
-            <div className="flex items-center justify-between mb-3">
-              <button
-                onClick={regenerateAnswer}
-                disabled={isRegenerating}
-                className="ml-4 bg-amber-600 hover:bg-amber-700 disabled:bg-amber-300 text-white px-3 py-1 rounded text-sm flex items-center gap-1 transition-colors"
-                title="Regenerate answer based on current snippets"
-              >
-                <RefreshCw size={14} className={isRegenerating ? "animate-spin" : ""} />
-                {isRegenerating ? "Regenerating..." : "Regenerate"}
-              </button>
-            </div>
-          </div>
-        </div>
+{/* Answer Box */}
+<div className="flex-1 p-4 flex flex-col">
+  <div className="bg-amber-50 border border-amber-200 p-4 rounded text-sm text-gray-800 leading-relaxed overflow-y-auto flex-1 prose max-w-none custom-prose">
+    {isRegenerating ? (
+      <div className="flex items-center justify-center h-full text-amber-600 space-x-2">
+        <RefreshCw size={20} className="animate-spin" />
+        <span>Regenerating answer based on available snippets...</span>
+      </div>
+    ) : (
+      <div
+        className="prose max-w-none custom-prose"
+        dangerouslySetInnerHTML={{ __html: content.answer }}
+      />
+    )}
+  </div>
+
+  {/* Actions */}
+  <div className="flex items-center justify-end mt-4">
+    <button
+      onClick={regenerateAnswer}
+      disabled={isRegenerating}
+      className="bg-amber-600 hover:bg-amber-700 disabled:bg-amber-300 text-white px-4 py-2 rounded text-sm flex items-center gap-2 transition-colors"
+      title="Regenerate answer based on current snippets"
+    >
+      <RefreshCw size={16} className={isRegenerating ? "animate-spin" : ""} />
+      {isRegenerating ? "Regenerating..." : "Regenerate"}
+    </button>
+  </div>
+</div>
+
+</div>
+
 
         <div className="col-span-1 row-span-3 flex flex-col gap-1">{rightSnippets.map(renderSnippetBox)}</div>
 
