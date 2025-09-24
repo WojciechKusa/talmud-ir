@@ -1,6 +1,16 @@
 {
-  "query": "What is the meaning of 'X' in context?",
-  "leftCommentary": ["Commentary 1", "Commentary 2"],
-  "rightCommentary": ["Authoritative note 1", "Authoritative note 2"],
-  "references": ["Source A", "Source B"]
+  "query": "how the solar eclipse can affect mental health",
+  "response": "The effects of a solar eclipse on mental health depend on one's personal beliefs in whether stellar phenomena can have such an effect. People who believe in astrology report things like agitation, unusual dreams, sudden bursts of creativity, and even relationship difficulties. Also mood changes, dizziness, tiredness, and interference with overall mental well-being are reported. Although major decisions are discouraged during this time, eclipse are said to also foster creativity and self-expression, helping individuals cope with feelings of change and lack of control. Furthermore, these events may inspire evaluations of one\u2019s life purpose and lead to the rapid manifestation of thoughts. It is important to note that astrology has no scientific backing, so that any advice given in this context must be taken considered with caution. It is perhaps best to carry out more in-depth research on reputable health sites or the medical literature before basing any decision on the present outcome",
+  "leftCommentary": [
+    "Commentary 1",
+    "Commentary 2"
+  ],
+  "rightCommentary": [
+    "Authoritative note 1",
+    "Authoritative note 2"
+  ],
+  "references": [
+    "Source A",
+    "Source B"
+  ]
 }
