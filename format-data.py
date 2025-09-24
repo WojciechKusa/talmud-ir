@@ -15,7 +15,21 @@ def response_text(topic):
         for l in f:
             l = json.loads(l)
             if topic == l['topic_id']:
-                return '. '.join([i["text"] for i in l["answer"]])
+                ret =  []
+                references = l["references"]
+                for answer in l["answer"]:
+                    refs = []
+                    if answer["citations"]:
+                        for ref in answer["citations"]:
+                            doc_id = references[ref].replace('#', '%23')
+                            refs += ["<a href=\"https://chatnoir-webcontent.chatnoir.eu/?index=msmarco-v2.1-segmented&trec-id=" + doc_id + "\">" + str(ref + 1) + "</a>"]
+                    txt = answer["text"]
+                    if refs:
+                        txt += "[" + (", ".join(refs)) + "]"
+                    ret += [txt]
+                #
+            
+                return '. '.join(ret)
     raise ValueError(f"did not find topic {topic}")
 
 @click.command()
