@@ -2,5 +2,36 @@
   "query": "What is the meaning of 'X' in context?",
   "leftCommentary": ["Commentary 1", "Commentary 2"],
   "rightCommentary": ["Authoritative note 1", "Authoritative note 2"],
-  "references": ["Source A", "Source B"]
+  "references": ["Source A", "Source B"],
+  "topReferences": ["Top Source 1", "Top Source 2"],
+  "bottomReferences": ["Bottom Source 1", "Bottom Source 2"],
+  "snippets": {
+    "ref_id": [
+      {
+        "text": "This is a relevant snippet from the text.",
+        "source": "Source A",
+        "page": "Page 123"
+      },
+      {
+        "text": "Another important excerpt related to the query.",
+        "source": "Source B",
+        "page": "Page 45"
+      }
+    ],
+    "ref_id_2": [
+      {
+        "text": "Additional snippet from another source.",
+        "source": "Source C",
+        "page": "Page 67"
+      }
+    ],
+    "ref_id_3": [
+      {
+        "text": "Further relevant information from a different text.",
+        "source": "Source D",
+        "page": "Page 89"
+      }
+    ]
+  }
+
 }
