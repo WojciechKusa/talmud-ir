@@ -1,0 +1,135 @@
+{
+  "queries": [
+    {
+      "id": "query_1",
+      "title": "Solar Eclipse and Mental Health",
+      "query": "how the solar eclipse can affect mental health?",
+      "answer": "The effects of a solar eclipse on mental health depend on one's personal beliefs in whether stellar phenomena can have such an effect. People who believe in astrology report things like agitation, unusual dreams, sudden bursts of creativity, and even relationship difficulties. Also mood changes, dizziness, tiredness, and interference with overall mental well-being are reported. Although major decisions are discouraged during this time, eclipse are said to also foster creativity and self-expression, helping individuals cope with feelings of change and lack of control. Furthermore, these events may inspire evaluations of one's life purpose and lead to the rapid manifestation of thoughts. It is important to note that astrology has no scientific backing, so that any advice given in this context must be taken considered with caution. It is perhaps best to carry out more in-depth research on reputable health sites or the medical literature before basing any decision on the present outcome",
+      "snippets": {
+        "ref_id_1": [
+          {
+            "text": "Solar eclipses have been historically associated with significant psychological impacts in various cultures.",
+            "source": "Journal of Cultural Astronomy",
+            "page": "Page 123"
+          }
+        ],
+        "ref_id_2": [
+          {
+            "text": "Studies suggest that belief in astrological phenomena can influence mental well-being during celestial events.",
+            "source": "Psychology Today",
+            "page": "Page 45"
+          }
+        ],
+        "ref_id_3": [
+          {
+            "text": "Research indicates that cultural narratives around eclipses can shape individual experiences and perceptions.",
+            "source": "Cultural Psychology Review",
+            "page": "Page 89"
+          }
+        ]
+      },
+      "commentaries": {
+        "eval_1": [
+          {
+            "id": "eval_1_comment_1",
+            "comment": "This is a fairly thoughtful response. Strengths: the student acknowledges both reported experiences (mood changes, creativity, dreams, agitation) and the role of personal beliefs. The response appropriately notes the lack of scientific backing for astrology while still respecting subjective experiences.",
+            "grade": "B",
+            "evaluator": "Dr. Sarah Chen",
+            "criteria": "Scientific Accuracy"
+          }
+        ],
+        "eval_2": [
+          {
+            "id": "eval_2_comment_1",
+            "comment": "The answer demonstrates good critical thinking by distinguishing between anecdotal reports and scientific evidence. However, it could benefit from discussing placebo effects and the psychological mechanisms behind belief-based experiences.",
+            "grade": "B+",
+            "evaluator": "Prof. Michael Rodriguez",
+            "criteria": "Critical Analysis"
+          }
+        ],
+        "eval_3": [
+          {
+            "id": "eval_3_comment_1", 
+            "comment": "Well-balanced response that avoids dismissing personal experiences while maintaining scientific skepticism. The recommendation to consult medical literature is appropriate.",
+            "grade": "A-",
+            "evaluator": "Dr. Emily Watson",
+            "criteria": "Balance & Nuance"
+          }
+        ]
+      }
+    },
+    {
+      "id": "query_2",
+      "title": "Climate Change Effects",
+      "query": "What are the main effects of climate change on ocean ecosystems?",
+      "answer": "Climate change significantly impacts ocean ecosystems through rising sea temperatures, ocean acidification, and changing current patterns. These changes affect marine biodiversity, coral reef health, and fish migration patterns, ultimately disrupting the entire marine food chain.",
+      "snippets": {
+        "ref_ocean_1": [
+          {
+            "text": "Ocean temperatures have risen by 0.6°C since the 1960s, causing thermal stress in marine organisms.",
+            "source": "Marine Biology Review",
+            "page": "Page 234"
+          }
+        ],
+        "ref_ocean_2": [
+          {
+            "text": "Ocean acidification has increased by 30% since pre-industrial times, affecting shell-forming organisms.",
+            "source": "Oceanography Today",
+            "page": "Page 156"
+          }
+        ]
+      },
+      "commentaries": {
+        "eval_ocean_1": [
+          {
+            "id": "eval_ocean_1_comment_1",
+            "comment": "Comprehensive overview covering the major mechanisms. Good use of specific data points. Could expand on regional variations and tipping points.",
+            "grade": "A",
+            "evaluator": "Dr. James Marine",
+            "criteria": "Completeness"
+          }
+        ]
+      }
+    }
+  ],
+  "referencePool": [
+    {
+      "id": "pool_ref_1",
+      "text": "Recent studies show that psychological preparation can mitigate negative emotional responses to astronomical events.",
+      "source": "Behavioral Psychology Quarterly",
+      "page": "Page 78",
+      "tags": ["psychology", "preparation", "astronomy"],
+      "relevanceScore": 0.85
+    },
+    {
+      "id": "pool_ref_2", 
+      "text": "Meditation practices have been shown to reduce anxiety during periods of perceived cosmic significance.",
+      "source": "Mindfulness Research Journal",
+      "page": "Page 92",
+      "tags": ["meditation", "anxiety", "cosmic events"],
+      "relevanceScore": 0.78
+    },
+    {
+      "id": "pool_ref_3",
+      "text": "Community gathering during eclipses often provides social support that improves mental well-being.",
+      "source": "Social Psychology Review",
+      "page": "Page 145",
+      "tags": ["community", "social support", "eclipses"],
+      "relevanceScore": 0.72
+    },
+    {
+      "id": "pool_ref_4",
+      "text": "Marine ecosystems near the poles are experiencing the most dramatic changes due to ice melt.",
+      "source": "Arctic Research Letters",
+      "page": "Page 67",
+      "tags": ["marine", "polar", "ice melt"],
+      "relevanceScore": 0.90
+    }
+  ],
+  "mockAnswers": {
+    "0": "No source material available to generate an answer. Please provide reference snippets to generate a comprehensive response.",
+    "1-2": "Based on limited available sources, there appears to be some connection between the query topic and available evidence, though more comprehensive analysis would benefit from additional references.",
+    "3-4": "The available evidence suggests multiple factors contribute to the topic under discussion. Cultural, psychological, and empirical perspectives provide different but complementary viewpoints.",
+    "5+": "A comprehensive analysis based on multiple sources reveals complex interconnections between various factors. The evidence supports a nuanced understanding that considers both empirical findings and subjective experiences."
+  }
+}
