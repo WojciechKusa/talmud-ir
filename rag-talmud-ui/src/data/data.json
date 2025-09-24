@@ -1,0 +1,6 @@
+{
+  "query": "What is the meaning of 'X' in context?",
+  "leftCommentary": ["Commentary 1", "Commentary 2"],
+  "rightCommentary": ["Authoritative note 1", "Authoritative note 2"],
+  "references": ["Source A", "Source B"]
+}
