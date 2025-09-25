@@ -9,6 +9,11 @@ const COMMENTARY_COLORS = [
   "bg-teal-50 border-teal-200"
 ];
 
+const METRICS_COLORS = [
+  "bg-green-100 border-green-200"
+];
+
+
 // Helper to generate mock answers
 const generateMockAnswer = (remainingSnippets, mockAnswers) => {
   const snippetCount = Object.keys(remainingSnippets).length;
@@ -78,8 +83,17 @@ const commentaryEntries = (content.commentary || []).map((c) => ({
   data: c
 }));
 
+const metricsEntry = content.automated_metrics
+  ? [
+      {
+        type: "metrics",
+        data: content.automated_metrics
+      }
+    ]
+  : [];
+
 // Merge and shuffle
-const mergedEntries = [...snippetEntries, ...commentaryEntries].sort(
+const mergedEntries = [...snippetEntries, ...commentaryEntries, ...metricsEntry].sort(
   () => Math.random() - 0.5
 );
 
@@ -89,6 +103,12 @@ const positionedEntries = mergedEntries.map((entry, idx) => {
     return {
       ...entry,
       color: SNIPPET_COLORS[idx % SNIPPET_COLORS.length]
+    };
+  }
+  if (entry.type === "metrics") {
+    return {
+      ...entry,
+      color: METRICS_COLORS[idx % METRICS_COLORS.length]
     };
   }
   return {
@@ -165,6 +185,28 @@ const renderBox = (entry) => {
       </div>
     );
   }
+  if (entry.type === "metrics") {
+    return (
+      <div
+        key="automated-metrics"
+        className={`${entry.color} border-2 p-3 text-xs leading-tight h-full flex flex-col`}
+        style={{ fontSize: "11px", lineHeight: "1.3" }}
+      >
+        <h3 className="font-bold text-xs mb-2 text-gray-800 border-b border-gray-300 pb-1">
+          Automated Metrics
+        </h3>
+        <div className="flex-1 overflow-y-auto">
+          {Object.entries(entry.data).map(([metric, value]) => (
+            <div key={metric} className="mb-1">
+              <span className="font-semibold text-gray-700">{metric}:</span>{" "}
+              <span className="text-gray-600">{value}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+  return null;
 };
 
   return (
