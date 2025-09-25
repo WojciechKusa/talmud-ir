@@ -3,20 +3,14 @@ import { X, RefreshCw, Eye, EyeOff, ChevronDown, ChevronUp, Star, ThumbsUp, Thum
 
 const SNIPPET_COLORS = [
   "bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:from-blue-100 hover:to-blue-150",
-  // "bg-gradient-to-br from-indigo-50 to-indigo-100 border-indigo-200 hover:from-indigo-100 hover:to-indigo-150",
-  // "bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 hover:from-purple-100 hover:to-purple-150",
-  // "bg-gradient-to-br from-cyan-50 to-cyan-100 border-cyan-200 hover:from-cyan-100 hover:to-cyan-150",
 ];
 
 const COMMENTARY_COLORS = [
   "bg-gradient-to-br from-emerald-50 to-emerald-100 border-emerald-200 hover:from-emerald-100 hover:to-emerald-150",
-  // "bg-gradient-to-br from-teal-50 to-teal-100 border-teal-200 hover:from-teal-100 hover:to-teal-150",
-  // "bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:from-green-100 hover:to-green-150",
 ];
 
 const METRICS_COLORS = [
   "bg-gradient-to-br from-amber-50 to-amber-100 border-amber-200 hover:from-amber-100 hover:to-amber-150",
-  // "bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200 hover:from-orange-100 hover:to-orange-150",
 ];
 
 const OTHER_FIELDS_COLORS = [
@@ -92,6 +86,7 @@ function App() {
   );
   const [boldMetrics, setBoldMetrics] = useState(false);
   const [expandedCards, setExpandedCards] = useState({});
+  const [showSelector, setShowSelector] = useState(false);
   const [hiddenCards, setHiddenCards] = useState({});
 
   const generateMockAnswer = (remainingSnippets, mockAnswers) => {
@@ -384,10 +379,50 @@ function App() {
   const hiddenCount = Object.keys(hiddenCards).length;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 overflow-hidden">
-      {renderSampleSelector()}
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 overflow-hidden relative">
+      
+      {/* Hamburger Menu */}
+      <div className="absolute top-4 right-4 z-20">
+        <button
+          onClick={() => setShowSelector((prev) => !prev)}
+          className="bg-white/80 backdrop-blur-md p-2 rounded-full shadow-md border border-gray-300 hover:bg-white transition-all"
+        >
+          <div className="flex flex-col gap-1">
+            <span className="block w-5 h-0.5 bg-gray-700 rounded"></span>
+            <span className="block w-5 h-0.5 bg-gray-700 rounded"></span>
+            <span className="block w-5 h-0.5 bg-gray-700 rounded"></span>
+          </div>
+        </button>
+      </div>
 
-      {/* Talmudic Grid Layout */}
+      {/* Sample Selector */}
+        {showSelector && (
+          <div className="absolute inset-0 bg-black/30 z-10 flex items-center justify-center">
+            <div className="bg-white p-6 rounded-xl shadow-2xl border border-indigo-300">
+          <h2 className="text-lg font-bold text-gray-800 mb-4">Select Sample</h2>
+          <select
+            id="sample-select"
+            value={selectedSampleId}
+            onChange={(e) => setSelectedSampleId(e.target.value)}
+            className="w-full px-4 py-2 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+          >
+            {samples.map((sample) => (
+              <option key={sample.sample_id} value={sample.sample_id}>
+            {sample.sample_id}
+              </option>
+            ))}
+          </select>
+          <button
+            onClick={() => setShowSelector(false)}
+            className="mt-4 bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-md shadow-md transition-all"
+          >
+            Apply Selection
+          </button>
+            </div>
+          </div>
+        )}
+
+        {/* Talmudic Grid Layout */}
       <div className="h-screen grid grid-cols-12 grid-rows-12 gap-2 p-4">
         
         {/* Top Row - spanning across */}
