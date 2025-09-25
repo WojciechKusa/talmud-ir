@@ -356,7 +356,11 @@ function App() {
           </div>
           
           <p className="text-xs text-gray-700 leading-relaxed mb-2">
-            {isCompact ? `${entry.data.comment.slice(0, 80)}...` : entry.data.comment}
+            {isCompact
+              ? entry.data.comment.length > 100
+                ? `${entry.data.comment.slice(0, 100)}...`
+                : entry.data.comment
+              : entry.data.comment}
           </p>
           
           {isExpanded && (
@@ -477,7 +481,7 @@ function App() {
                       className="bg-orange-100 text-orange-600 px-3 py-1 rounded-full hover:bg-orange-200 transition-colors"
                     >
                       {hiddenCount} hidden • Show all
-                    </button>
+                        </button>
                   )}
                 </div>
                 
