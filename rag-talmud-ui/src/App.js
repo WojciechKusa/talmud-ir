@@ -5,7 +5,7 @@ const SNIPPET_COLORS = [
   "bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:from-blue-100 hover:to-blue-150",
   // "bg-gradient-to-br from-indigo-50 to-indigo-100 border-indigo-200 hover:from-indigo-100 hover:to-indigo-150",
   // "bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 hover:from-purple-100 hover:to-purple-150",
-  "bg-gradient-to-br from-cyan-50 to-cyan-100 border-cyan-200 hover:from-cyan-100 hover:to-cyan-150",
+  // "bg-gradient-to-br from-cyan-50 to-cyan-100 border-cyan-200 hover:from-cyan-100 hover:to-cyan-150",
 ];
 
 const COMMENTARY_COLORS = [
@@ -16,7 +16,11 @@ const COMMENTARY_COLORS = [
 
 const METRICS_COLORS = [
   "bg-gradient-to-br from-amber-50 to-amber-100 border-amber-200 hover:from-amber-100 hover:to-amber-150",
-  "bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200 hover:from-orange-100 hover:to-orange-150",
+  // "bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200 hover:from-orange-100 hover:to-orange-150",
+];
+
+const OTHER_FIELDS_COLORS = [
+  "bg-gradient-to-br from-gray-50 to-gray-100 border-gray-200 hover:from-gray-100 hover:to-gray-150",
 ];
 
 // Mock data for demonstration
@@ -31,16 +35,61 @@ function App() {
   });
   const [isRegenerating, setIsRegenerating] = useState(false);
 
+  const [samples, setSamples] = useState([]);
+  const [selectedSampleId, setSelectedSampleId] = useState("");
+
   useEffect(() => {
-    fetch("./data.json")
-      .then((res) => res.json())
-      .then((data) => {
-        setContent(data);
+    fetch("./data.jsonl")
+      .then((res) => res.text())
+      .then((text) => {
+        const lines = text.split('\n').filter(Boolean);
+        const parsed = lines.map(line => {
+          try {
+            return JSON.parse(line);
+          } catch (e) {
+            return null;
+          }
+        }).filter(Boolean);
+        setSamples(parsed);
+        if (parsed.length > 0) {
+          setSelectedSampleId(parsed[0].sample_id);
+          setContent(parsed[0]);
+        }
       })
       .catch((err) => {
-        console.error("Error loading data.json:", err);
+        console.error("Error loading data.jsonl:", err);
       });
   }, []);
+
+  useEffect(() => {
+    if (!selectedSampleId || samples.length === 0) return;
+    const sample = samples.find(s => s.sample_id === selectedSampleId);
+    if (sample) setContent(sample);
+  }, [selectedSampleId, samples]);
+
+  const handleSampleChange = (event) => {
+    setSelectedSampleId(event.target.value);
+  };
+
+  const renderSampleSelector = () => (
+    <div className="absolute top-4 right-4 bg-white p-2 rounded shadow-md">
+      <label htmlFor="sample-select" className="block text-sm font-medium text-gray-700">
+        Select Sample
+      </label>
+      <select
+        id="sample-select"
+        value={selectedSampleId}
+        onChange={handleSampleChange}
+        className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+      >
+        {samples.map((sample) => (
+          <option key={sample.sample_id} value={sample.sample_id}>
+            {sample.sample_id}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
   const [boldMetrics, setBoldMetrics] = useState(false);
   const [expandedCards, setExpandedCards] = useState({});
   const [hiddenCards, setHiddenCards] = useState({});
@@ -336,6 +385,8 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 overflow-hidden">
+      {renderSampleSelector()}
+
       {/* Talmudic Grid Layout */}
       <div className="h-screen grid grid-cols-12 grid-rows-12 gap-2 p-4">
         
