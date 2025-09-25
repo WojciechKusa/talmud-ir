@@ -20,76 +20,27 @@ const METRICS_COLORS = [
 ];
 
 // Mock data for demonstration
-const mockData = {
-  query: "How does solar eclipse affect mental health?",
-  snippets: {
-    "ref_id_1": [{
-      text: "Solar eclipses have been historically associated with significant psychological impacts in various cultures.",
-      source: "Journal of Cultural Astronomy",
-      page: 123
-    }],
-    "ref_id_2": [{
-      text: "Astrological interpretations of solar eclipses often emphasize emotional turbulence and self-reflection.",
-      source: "Cultural Psychology Review",
-      page: 89
-    }],
-    "ref_id_3": [{
-      text: "Research indicates that cultural narratives around eclipses can shape individual experiences and perceptions.",
-      source: "Cultural Psychology Review",
-      page: 89
-    }],
-    "ref_id_4": [{
-      text: "Some individuals report heightened creativity and introspection during solar eclipses. Mood changes and feelings of unease are commonly reported during eclipses, particularly among those who follow astrological beliefs.",
-      source: "Creative Minds Journal",
-      page: 101
-    }],
-    "ref_id_5": [{
-      text: "Medical experts recommend focusing on evidence-based practices for mental well-being during celestial events.",
-      source: "Psychology Today",
-      page: 45
-    }]
-  },
-  commentary: [
-    {
-      id: 1,
-      grade: "B",
-      comment: "This is a fairly thoughtful response. The student acknowledges both reported experiences and the role of personal beliefs, showing critical thinking. However, the answer could be clearer and better structured."
-    },
-    {
-      id: 2,
-      grade: "A",
-      comment: "Excellent analysis that balances cultural/astrological perspectives with scientific caution. Shows awareness of different viewpoints and emphasizes evidence-based practices."
-    },
-    {
-      id: 3,
-      grade: "B",
-      comment: "The student's answer does cover a range of possible effects and importantly mentions the lack of scientific support for astrology, which is good. However, the explanation is repetitive and blends belief-based claims with actual mental health impacts."
-    }
-  ],
-  automated_metrics: {
-    "MAP": 0.75,
-    "Factuality": 0.8,
-    "Coherence": 0.9,
-    "Relevance": 0.85
-  },
-  answer: `
-    <p>The effects of a solar eclipse on mental health depend on one's personal beliefs in whether stellar phenomena can have such an effect. People who believe in astrology report things like agitation, unusual dreams, sudden bursts of creativity, and even relationship difficulties.</p>
-    
-    <p>Also mood changes, dizziness, tiredness, and interference with overall mental well-being are reported. Although major decisions are discouraged during this time, eclipse are said to also foster creativity and self-expression, helping individuals cope with feelings of change and lack of control.</p>
-    
-    <p>Furthermore, these events may inspire evaluations of one's life purpose and lead to the rapid manifestation of thoughts. It is important to note that astrology has no scientific backing, so that any advice given in this context must be taken considered with caution.</p>
-  `,
-  mockAnswers: {
-    "0": "No references available to generate an answer.",
-    "1-2": "Based on limited references, there appears to be some cultural and personal belief-based associations between solar eclipses and mental health effects, though scientific evidence is lacking.",
-    "3": "Multiple sources suggest that solar eclipses may have psychological effects primarily rooted in cultural beliefs and personal expectations rather than direct astronomical influence.",
-    "4+": "The effects of a solar eclipse on mental health depend on one's personal beliefs in whether stellar phenomena can have such an effect. People who believe in astrology report things like agitation, unusual dreams, sudden bursts of creativity, and even relationship difficulties."
-  }
-};
-
 function App() {
-  const [content, setContent] = useState(mockData);
+  const [content, setContent] = useState({
+    query: "",
+    answer: "",
+    snippets: {},
+    commentary: [],
+    automated_metrics: undefined,
+    mockAnswers: {}
+  });
   const [isRegenerating, setIsRegenerating] = useState(false);
+
+  useEffect(() => {
+    fetch("./data.json")
+      .then((res) => res.json())
+      .then((data) => {
+        setContent(data);
+      })
+      .catch((err) => {
+        console.error("Error loading data.json:", err);
+      });
+  }, []);
   const [boldMetrics, setBoldMetrics] = useState(false);
   const [expandedCards, setExpandedCards] = useState({});
   const [hiddenCards, setHiddenCards] = useState({});
