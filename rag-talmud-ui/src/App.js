@@ -118,9 +118,9 @@ const renderBox = (entry) => {
           <X size={12} />
         </button>
 
-        <h3 className="font-bold text-xs mb-2 text-gray-800 border-b border-gray-300 pb-1 pr-6">
+        <h4 className="font-bold text-xs mb-2 text-gray-800 border-b border-gray-300 pb-1 pr-6">
           Reference: {entry.refId}
-        </h3>
+        </h4>
         <div className="flex-1 overflow-y-auto">
           {entry.snippets.map((snippet, i) => (
             <div key={i} className="mb-2 last:mb-0">
@@ -148,13 +148,27 @@ const renderBox = (entry) => {
         <div className="flex-1 overflow-y-auto">
           <p className="text-gray-700">{entry.data.comment}</p>
         </div>
+        <div className="mt-2 flex items-center gap-2">
+          <button
+            className="hover:bg-green-600 text-white px-2 py-1 rounded text-xs flex items-center gap-1"
+            title="Thumb up"
+          >
+            👍
+          </button>
+          <button
+            className="hover:bg-red-600 text-white px-2 py-1 rounded text-xs flex items-center gap-1"
+            title="Thumb down"
+          >
+            👎
+          </button>
+        </div>
       </div>
     );
   }
 };
 
   return (
-    <div className="h-screen w-screen bg-gradient-to-br from-amber-50 to-orange-50 overflow-hidden">
+    <div className="h-screen w-screen bg-gradient-to-br from-orange-50 to-white-50 overflow-hidden">
       <div className="h-full w-full grid grid-cols-5 grid-rows-5 gap-0 p-4">
         <div className="col-span-1 row-span-1"></div>
         <div className="col-span-3 row-span-1 flex gap-1">{topEntries.map(renderBox)}</div>
