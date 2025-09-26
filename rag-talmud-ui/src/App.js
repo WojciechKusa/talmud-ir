@@ -15,31 +15,28 @@ const METRICS_COLORS = [
   "bg-gradient-to-br from-amber-50 to-amber-100 border-amber-200 hover:from-amber-100 hover:to-amber-150",
 ];
 
-const RESPONSE_COLORS = [
+const GENERATION_COLORS = [
   "bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 hover:from-purple-100 hover:to-purple-150",
 ];
 
-const OTHER_FIELDS_COLORS = [
-  "bg-gradient-to-br from-gray-50 to-gray-100 border-gray-200 hover:from-gray-100 hover:to-gray-150",
-];
-
-// Mock data for demonstration
 function App() {
-  const [content, setContent] = useState({
-    query: "",
-    answer: "",
-    snippets: {},
-    commentary: [],
-    automated_metrics: undefined,
-    mockAnswers: {}
+  const [data, setData] = useState({
+    central_block_id: "",
+    generations: [],
+    snippets: [],
+    commentaries: [],
+    metrics: []
   });
   const [isRegenerating, setIsRegenerating] = useState(false);
-
   const [samples, setSamples] = useState([]);
   const [selectedSampleId, setSelectedSampleId] = useState("");
+  const [boldMetrics, setBoldMetrics] = useState(false);
+  const [expandedCards, setExpandedCards] = useState({});
+  const [showSelector, setShowSelector] = useState(false);
+  const [hiddenCards, setHiddenCards] = useState({});
 
   useEffect(() => {
-    fetch("./data.jsonl")
+    fetch("./new.jsonl")
       .then((res) => res.text())
       .then((text) => {
         const lines = text.split('\n').filter(Boolean);
@@ -52,8 +49,8 @@ function App() {
         }).filter(Boolean);
         setSamples(parsed);
         if (parsed.length > 0) {
-          setSelectedSampleId(parsed[0].sample_id);
-          setContent(parsed[0]);
+          setSelectedSampleId(parsed[0].central_block_id || "sample_1");
+          setData(parsed[0]);
         }
       })
       .catch((err) => {
@@ -63,55 +60,12 @@ function App() {
 
   useEffect(() => {
     if (!selectedSampleId || samples.length === 0) return;
-    const sample = samples.find(s => s.sample_id === selectedSampleId);
-    if (sample) setContent(sample);
+    const sample = samples.find(s => s.central_block_id === selectedSampleId) || samples[0];
+    if (sample) setData(sample);
   }, [selectedSampleId, samples]);
 
   const handleSampleChange = (event) => {
     setSelectedSampleId(event.target.value);
-  };
-
-  const renderSampleSelector = () => (
-    <div className="absolute top-4 right-4 bg-white p-2 rounded shadow-md">
-      <label htmlFor="sample-select" className="block text-sm font-medium text-gray-700">
-        Select Sample
-      </label>
-      <select
-        id="sample-select"
-        value={selectedSampleId}
-        onChange={handleSampleChange}
-        className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
-      >
-        {samples.map((sample) => (
-          <option key={sample.sample_id} value={sample.sample_id}>
-            {sample.sample_id}
-          </option>
-        ))}
-      </select>
-    </div>
-  );
-  const [boldMetrics, setBoldMetrics] = useState(false);
-  const [expandedCards, setExpandedCards] = useState({});
-  const [showSelector, setShowSelector] = useState(false);
-  const [hiddenCards, setHiddenCards] = useState({});
-
-  const generateMockAnswer = (remainingSnippets, mockAnswers) => {
-    const snippetCount = Object.keys(remainingSnippets).length;
-    if (snippetCount === 0) return mockAnswers["0"];
-    if (snippetCount <= 2) return mockAnswers["1-2"];
-    if (snippetCount === 3) return mockAnswers["3"];
-    return mockAnswers["4+"];
-  };
-
-  const deleteSnippet = (refId) => {
-    setContent((prev) => {
-      const newSnippets = { ...prev.snippets };
-      delete newSnippets[refId];
-      return {
-        ...prev,
-        snippets: newSnippets
-      };
-    });
   };
 
   const toggleCardExpansion = (cardId) => {
@@ -141,22 +95,31 @@ function App() {
     return randomized;
   };
 
+  const deleteSnippet = (snippetId) => {
+    setData((prev) => ({
+      ...prev,
+      snippets: prev.snippets.filter(s => s.id !== snippetId)
+    }));
+  };
+
   const regenerateAnswer = async () => {
     setIsRegenerating(true);
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
-    const newAnswer = generateMockAnswer(content.snippets, content.mockAnswers);
-    let newMetrics = content.automated_metrics
-      ? randomizeMetrics(content.automated_metrics)
-      : undefined;
+    // Find the central generation and randomize its metrics
+    const centralItem = getCentralItem();
+    if (centralItem && centralItem.automated_metrics) {
+      const newMetrics = randomizeMetrics(centralItem.automated_metrics);
+      
+      setData((prev) => {
+        const newGenerations = prev.generations.map(gen => 
+          gen.id === centralItem.id 
+            ? { ...gen, automated_metrics: newMetrics }
+            : gen
+        );
+        return { ...prev, generations: newGenerations };
+      });
 
-    setContent((prev) => ({
-      ...prev,
-      answer: newAnswer,
-      automated_metrics: newMetrics || prev.automated_metrics,
-    }));
-
-    if (newMetrics) {
       setBoldMetrics(true);
       setTimeout(() => setBoldMetrics(false), 3000);
     }
@@ -164,32 +127,51 @@ function App() {
     setIsRegenerating(false);
   };
 
-  // Create organized entries for Talmudic layout
-  const snippetEntries = Object.entries(content.snippets || {}).map(
-    ([refId, snippets]) => ({
-      type: "snippet",
-      refId,
-      snippets,
-      id: refId
-    })
-  );
+  // Get the central item based on central_block_id
+  const getCentralItem = () => {
+    const allItems = [
+      ...data.generations,
+      ...data.snippets,
+      ...data.commentaries,
+      ...data.metrics.map(m => ({ ...m, type: 'metrics' }))
+    ];
+    return allItems.find(item => item.id === data.central_block_id);
+  };
 
-  const commentaryEntries = (content.commentary || []).map((c) => ({
-    type: "commentary",
-    data: c,
-    id: `commentary-${c.id}`
-  }));
+  // Get all items except the central one for the surrounding cards
+  const getSurroundingItems = () => {
+    const allItems = [];
+    
+    // Add generations (except central)
+    data.generations.forEach(gen => {
+      if (gen.id !== data.central_block_id) {
+        allItems.push({ type: "generation", data: gen, id: gen.id });
+      }
+    });
 
-  const metricsEntry = content.automated_metrics
-    ? [{
-        type: "metrics",
-        data: content.automated_metrics,
-        id: "metrics"
-      }]
-    : [];
+    // Add snippets (except central)
+    data.snippets.forEach(snippet => {
+      if (snippet.id !== data.central_block_id) {
+        allItems.push({ type: "snippet", data: snippet, id: snippet.id });
+      }
+    });
 
-  const allEntries = [...snippetEntries, ...commentaryEntries, ...metricsEntry];
-  const visibleEntries = allEntries.filter(entry => !hiddenCards[entry.id]);
+    // Add commentaries (except central)
+    data.commentaries.forEach(commentary => {
+      if (commentary.id !== data.central_block_id) {
+        allItems.push({ type: "commentary", data: commentary, id: commentary.id.toString() });
+      }
+    });
+
+    // Add metrics (except central)
+    data.metrics.forEach(metric => {
+      if (metric.id !== data.central_block_id) {
+        allItems.push({ type: "metrics", data: metric, id: metric.id });
+      }
+    });
+
+    return allItems.filter(item => !hiddenCards[item.id]);
+  };
 
   // Distribute cards around the center
   const distributeCards = (entries) => {
@@ -204,13 +186,14 @@ function App() {
     return distributed;
   };
 
-  const cardPositions = distributeCards(visibleEntries);
+  const surroundingItems = getSurroundingItems();
+  const cardPositions = distributeCards(surroundingItems);
+  const centralItem = getCentralItem();
 
   const renderCard = (entry, position) => {
     const isExpanded = expandedCards[entry.id];
     const isCompact = !isExpanded;
     
-    // Determine size based on position and content
     const getCardClasses = () => {
       const base = "transition-all duration-500 hover:scale-105 hover:shadow-2xl backdrop-blur-sm border-2 rounded-xl shadow-lg relative group cursor-pointer";
       
@@ -278,19 +261,16 @@ function App() {
     }
 
     if (entry.type === "snippet") {
-      const colorIndex = parseInt(entry.refId.split('_')[2] || '0') % SNIPPET_COLORS.length;
-      const colorClass = SNIPPET_COLORS[colorIndex];
-      
       return (
         <div
           key={entry.id}
-          className={`${getCardClasses()} ${colorClass} p-3`}
+          className={`${getCardClasses()} ${SNIPPET_COLORS[0]} p-3`}
           onClick={() => toggleCardExpansion(entry.id)}
         >
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-1">
               <BookOpen size={14} className="text-blue-600" />
-              <h4 className="font-bold text-xs text-gray-800">{entry.refId.replace('_', ' ')}</h4>
+              <h4 className="font-bold text-xs text-gray-800">{entry.data.id}</h4>
             </div>
             <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
               <button
@@ -301,7 +281,7 @@ function App() {
                 <EyeOff size={10} />
               </button>
               <button
-                onClick={(e) => { e.stopPropagation(); deleteSnippet(entry.refId); }}
+                onClick={(e) => { e.stopPropagation(); deleteSnippet(entry.data.id); }}
                 className="text-red-400 hover:text-red-600"
                 title="Delete"
               >
@@ -311,44 +291,40 @@ function App() {
           </div>
           
           <div className="text-xs leading-relaxed">
-            {entry.snippets.map((snippet, i) => (
-              <div key={i}>
-                <p className="text-gray-700 mb-1">
-                  {isCompact ? `${snippet.text.slice(0, 60)}...` : snippet.text}
-                </p>
-                {isExpanded && (
-                  <div className="flex gap-2 text-xs text-gray-500 mb-2">
-                    <span className="bg-white/70 px-1 rounded text-xs">{snippet.source}</span>
-                    <span className="bg-white/70 px-1 rounded text-xs">p.{snippet.page}</span>
-                  </div>
-                )}
+            <p className="text-gray-700 mb-1">
+              {isCompact ? `${entry.data.text.slice(0, 60)}...` : entry.data.text}
+            </p>
+            {isExpanded && (
+              <div className="flex gap-2 text-xs text-gray-500 mb-2">
+                <span className="bg-white/70 px-1 rounded text-xs">{entry.data.source}</span>
+                <span className="bg-white/70 px-1 rounded text-xs">{entry.data.page}</span>
               </div>
-            ))}
+            )}
           </div>
         </div>
       );
     }
 
     if (entry.type === "commentary") {
-      const colorIndex = (entry.data.id - 1) % COMMENTARY_COLORS.length;
-      const colorClass = COMMENTARY_COLORS[colorIndex];
-      const gradeColor = entry.data.grade === 'A' ? 'text-green-600 bg-green-100' : 
-                        entry.data.grade === 'B' ? 'text-blue-600 bg-blue-100' : 
+      const gradeColor = entry.data.grade === 'A' || entry.data.grade === '5' ? 'text-green-600 bg-green-100' : 
+                        entry.data.grade === 'B' || entry.data.grade === '4' ? 'text-blue-600 bg-blue-100' : 
                         'text-orange-600 bg-orange-100';
       
       return (
         <div
           key={entry.id}
-          className={`${getCardClasses()} ${colorClass} p-3`}
+          className={`${getCardClasses()} ${COMMENTARY_COLORS[0]} p-3`}
           onClick={() => toggleCardExpansion(entry.id)}
         >
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-1">
               <MessageSquare size={14} className="text-emerald-600" />
               <h3 className="font-bold text-xs text-gray-800">Commentary</h3>
-              <span className={`text-xs font-bold px-1 py-0.5 rounded-full ${gradeColor}`}>
-                {entry.data.grade}
-              </span>
+              {entry.data.grade && (
+                <span className={`text-xs font-bold px-1 py-0.5 rounded-full ${gradeColor}`}>
+                  {entry.data.grade}
+                </span>
+              )}
             </div>
             <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
               <button
@@ -384,9 +360,181 @@ function App() {
         </div>
       );
     }
+
+    if (entry.type === "generation") {
+      return (
+        <div
+          key={entry.id}
+          className={`${getCardClasses()} ${GENERATION_COLORS[0]} p-3`}
+          onClick={() => toggleCardExpansion(entry.id)}
+        >
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-1">
+              <MessageSquare size={14} className="text-purple-600" />
+              <h3 className="font-bold text-xs text-gray-800">Generation</h3>
+            </div>
+            <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              <button
+                onClick={(e) => { e.stopPropagation(); toggleCardVisibility(entry.id); }}
+                className="text-gray-400 hover:text-gray-600"
+                title="Hide"
+              >
+                <EyeOff size={10} />
+              </button>
+            </div>
+          </div>
+          
+          <div className="text-xs leading-relaxed">
+            <p className="font-medium text-gray-800 mb-1">
+              {isCompact ? `${entry.data.query.slice(0, 100)}...` : entry.data.query}
+            </p>
+            <p className="text-gray-700">
+              {isCompact ? `${entry.data.answer.slice(0, 80)}...` : entry.data.answer}
+            </p>
+          </div>
+        </div>
+      );
+    }
   };
 
-  const hiddenCount = Object.keys(hiddenCards).length;
+  const renderCentralContent = () => {
+    if (!centralItem) {
+      return <div className="text-gray-500 text-center">No central item found</div>;
+    }
+
+    if (centralItem.query !== undefined && centralItem.answer !== undefined) {
+      // This is a generation
+      return (
+        <div className="h-full flex flex-col">
+          <div className="bg-gradient-to-r from-indigo-600 to-purple-700 p-4">
+            <input
+              type="text"
+              value={centralItem.query}
+              readOnly
+              className="w-full bg-white/95 backdrop-blur-sm border-0 p-3 rounded-xl text-gray-900 shadow-inner font-medium"
+              placeholder="Enter your research question..."
+            />
+          </div>
+
+          <div className="flex-1 p-6 flex flex-col overflow-hidden">
+            <div className="bg-gradient-to-br from-gray-50 to-white border border-gray-200 rounded-xl p-6 shadow-inner flex-1 overflow-y-auto">
+              {isRegenerating ? (
+                <div className="flex items-center justify-center h-full text-indigo-600 space-x-3">
+                  <RefreshCw size={28} className="animate-spin" />
+                  <span className="text-xl font-medium">Regenerating answer...</span>
+                </div>
+              ) : (
+                <div
+                  className="prose prose-lg max-w-none text-gray-800 leading-relaxed"
+                  dangerouslySetInnerHTML={{ __html: centralItem.answer }}
+                />
+              )}
+            </div>
+
+            {/* Metrics Display */}
+            {centralItem.automated_metrics && (
+              <div className="mt-4 p-4 bg-gradient-to-r from-amber-50 to-amber-100 rounded-xl">
+                <h3 className="font-bold text-sm text-amber-800 mb-2">Metrics</h3>
+                <div className="grid grid-cols-4 gap-4">
+                  {Object.entries(centralItem.automated_metrics).map(([metric, value]) => (
+                    <div key={metric} className="text-center">
+                      <div className="text-xs text-amber-600">{metric}</div>
+                      <div className={`font-bold text-amber-700 ${boldMetrics ? 'animate-pulse scale-110' : ''}`}>
+                        {typeof value === 'number' ? value.toFixed(2) : value}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Action Bar */}
+            <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-200">
+              <div className="flex items-center gap-3 text-sm text-gray-600">
+                <span className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full font-medium">
+                  {data.snippets.length} snippets
+                </span>
+                {Object.keys(hiddenCards).length > 0 && (
+                  <button
+                    onClick={() => setHiddenCards({})}
+                    className="bg-orange-100 text-orange-600 px-3 py-1 rounded-full hover:bg-orange-200 transition-colors"
+                  >
+                    {Object.keys(hiddenCards).length} hidden • Show all
+                  </button>
+                )}
+              </div>
+              
+              <button
+                onClick={regenerateAnswer}
+                disabled={isRegenerating}
+                className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 text-white px-6 py-3 rounded-xl font-medium flex items-center gap-2 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:scale-100"
+              >
+                <RefreshCw size={18} className={isRegenerating ? "animate-spin" : ""} />
+                {isRegenerating ? "Regenerating..." : "Regenerate"}
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    } else if (centralItem.text) {
+      // This is a snippet
+      return (
+        <div className="h-full flex flex-col p-6">
+          <div className="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-xl p-6 flex-1 overflow-y-auto">
+            <div className="flex items-center gap-2 mb-4">
+              <BookOpen size={20} className="text-blue-600" />
+              <h2 className="text-xl font-bold text-gray-800">{centralItem.id}</h2>
+            </div>
+            <p className="text-gray-800 leading-relaxed text-lg mb-4">{centralItem.text}</p>
+            <div className="flex gap-4 text-sm text-gray-600">
+              <span className="bg-white/70 px-3 py-1 rounded-lg">{centralItem.source}</span>
+              <span className="bg-white/70 px-3 py-1 rounded-lg">{centralItem.page}</span>
+            </div>
+          </div>
+        </div>
+      );
+    } else if (centralItem.comment) {
+      // This is a commentary
+      return (
+        <div className="h-full flex flex-col p-6">
+          <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 border border-emerald-200 rounded-xl p-6 flex-1 overflow-y-auto">
+            <div className="flex items-center gap-2 mb-4">
+              <MessageSquare size={20} className="text-emerald-600" />
+              <h2 className="text-xl font-bold text-gray-800">Commentary</h2>
+              {centralItem.grade && (
+                <span className="text-lg font-bold px-3 py-1 rounded-full bg-green-100 text-green-600">
+                  {centralItem.grade}
+                </span>
+              )}
+            </div>
+            <p className="text-gray-800 leading-relaxed text-lg">{centralItem.comment}</p>
+          </div>
+        </div>
+      );
+    } else {
+      // This is metrics or other type
+      return (
+        <div className="h-full flex flex-col p-6">
+          <div className="bg-gradient-to-br from-amber-50 to-amber-100 border border-amber-200 rounded-xl p-6 flex-1">
+            <div className="flex items-center gap-2 mb-4">
+              <BarChart3 size={20} className="text-amber-600" />
+              <h2 className="text-xl font-bold text-gray-800">Metrics</h2>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              {Object.entries(centralItem).filter(([key]) => key !== 'id' && key !== 'type').map(([metric, value]) => (
+                <div key={metric} className="bg-white/60 rounded-lg p-4 text-center">
+                  <div className="text-sm text-gray-600 mb-1">{metric}</div>
+                  <div className="text-2xl font-bold text-amber-700">
+                    {typeof value === 'number' ? value.toFixed(2) : value}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 overflow-hidden relative">
@@ -397,16 +545,16 @@ function App() {
       </div>
 
       {/* Sample Selector */}
-        {showSelector && (
-          <SampleSelector
-            samples={samples}
-            selected={selectedSampleId}
-            onChange={setSelectedSampleId}
-            onClose={() => setShowSelector(false)}
-          />
-        )}
+      {showSelector && (
+        <SampleSelector
+          samples={samples}
+          selected={selectedSampleId}
+          onChange={setSelectedSampleId}
+          onClose={() => setShowSelector(false)}
+        />
+      )}
 
-        {/* Talmudic Grid Layout */}
+      {/* Talmudic Grid Layout */}
       <div className="h-screen grid grid-cols-12 grid-rows-12 gap-2 p-4">
         
         {/* Top Row - spanning across */}
@@ -422,59 +570,7 @@ function App() {
         {/* Central Content Area */}
         <div className="col-span-6 row-span-8 flex flex-col">
           <div className="bg-white/90 backdrop-blur-lg border-4 border-indigo-300 rounded-2xl shadow-2xl overflow-hidden h-full flex flex-col">
-            {/* Query Header */}
-            <div className="bg-gradient-to-r from-indigo-600 to-purple-700 p-4">
-              <input
-                type="text"
-                value={content.query}
-                readOnly
-                className="w-full bg-white/95 backdrop-blur-sm border-0 p-3 rounded-xl text-gray-900 shadow-inner font-medium"
-                placeholder="Enter your research question..."
-              />
-            </div>
-
-            {/* Answer Content */}
-            <div className="flex-1 p-6 flex flex-col overflow-hidden">
-              <div className="bg-gradient-to-br from-gray-50 to-white border border-gray-200 rounded-xl p-6 shadow-inner flex-1 overflow-y-auto">
-                {isRegenerating ? (
-                  <div className="flex items-center justify-center h-full text-indigo-600 space-x-3">
-                    <RefreshCw size={28} className="animate-spin" />
-                    <span className="text-xl font-medium">Regenerating answer...</span>
-                  </div>
-                ) : (
-                  <div
-                    className="prose prose-lg max-w-none text-gray-800 leading-relaxed"
-                    dangerouslySetInnerHTML={{ __html: content.answer }}
-                  />
-                )}
-              </div>
-
-              {/* Action Bar */}
-              <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-200">
-                <div className="flex items-center gap-3 text-sm text-gray-600">
-                  <span className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full font-medium">
-                    {Object.keys(content.snippets).length} refs
-                  </span>
-                  {hiddenCount > 0 && (
-                    <button
-                      onClick={() => setHiddenCards({})}
-                      className="bg-orange-100 text-orange-600 px-3 py-1 rounded-full hover:bg-orange-200 transition-colors"
-                    >
-                      {hiddenCount} hidden • Show all
-                        </button>
-                  )}
-                </div>
-                
-                <button
-                  onClick={regenerateAnswer}
-                  disabled={isRegenerating}
-                  className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 text-white px-6 py-3 rounded-xl font-medium flex items-center gap-2 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:scale-100"
-                >
-                  <RefreshCw size={18} className={isRegenerating ? "animate-spin" : ""} />
-                  {isRegenerating ? "Regenerating..." : "Regenerate"}
-                </button>
-              </div>
-            </div>
+            {renderCentralContent()}
           </div>
         </div>
 

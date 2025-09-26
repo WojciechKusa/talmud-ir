@@ -20,8 +20,8 @@ function SampleSelector({ samples, selected, onChange, onClose }) {
                      focus:border-indigo-500"
         >
           {samples.map((sample) => (
-            <option key={sample.sample_id} value={sample.sample_id}>
-              {sample.sample_id}
+            <option key={sample.central_block_id} value={sample.central_block_id}>
+              {sample.central_block_id}
             </option>
           ))}
         </select>
