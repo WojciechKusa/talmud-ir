@@ -369,28 +369,50 @@ function App() {
           onClick={() => toggleCardExpansion(entry.id)}
         >
           <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-1">
-              <MessageSquare size={14} className="text-purple-600" />
-              <h3 className="font-bold text-xs text-gray-800">Generation</h3>
-            </div>
-            <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-              <button
-                onClick={(e) => { e.stopPropagation(); toggleCardVisibility(entry.id); }}
-                className="text-gray-400 hover:text-gray-600"
-                title="Hide"
-              >
-                <EyeOff size={10} />
-              </button>
-            </div>
+        <div className="flex items-center gap-1">
+          <MessageSquare size={14} className="text-purple-600" />
+          {isCompact && entry.data.query.length > 100 ? `${entry.data.query.slice(0, 100)}...` : entry.data.query}
+        </div>
+        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <button
+            onClick={(e) => { e.stopPropagation(); toggleCardVisibility(entry.id); }}
+            className="text-gray-400 hover:text-gray-600"
+            title="Hide"
+          >
+            <EyeOff size={10} />
+          </button>
+          <button
+            onClick={(e) => {
+          e.stopPropagation();
+          const originalColor = GENERATION_COLORS[0];
+          const updatedGenerations = data.generations.map((gen) =>
+            gen.id === entry.id ? { ...gen, highlight: true } : gen
+          );
+          setData((prev) => ({ ...prev, generations: updatedGenerations }));
+
+          setTimeout(() => {
+            const resetGenerations = data.generations.map((gen) =>
+              gen.id === entry.id ? { ...gen, highlight: false } : gen
+            );
+            setData((prev) => ({ ...prev, generations: resetGenerations }));
+          }, 2000);
+            }}
+            className="text-indigo-400 hover:text-indigo-600"
+            title="Regenerate"
+          >
+            <RefreshCw size={10} />
+          </button>
+        </div>
           </div>
           
-          <div className="text-xs leading-relaxed">
-            <p className="font-medium text-gray-800 mb-1">
-              {isCompact ? `${entry.data.query.slice(0, 100)}...` : entry.data.query}
-            </p>
-            <p className="text-gray-700">
-              {isCompact ? `${entry.data.answer.slice(0, 80)}...` : entry.data.answer}
-            </p>
+          <div
+        className={`text-xs leading-relaxed ${
+          entry.data.highlight ? "bg-white transition-colors duration-200" : ""
+        }`}
+          >
+        <p className="text-gray-700">
+          {isCompact ? `${entry.data.answer.slice(0, 80)}...` : entry.data.answer}
+        </p>
           </div>
         </div>
       );
@@ -405,90 +427,131 @@ function App() {
     if (centralItem.query !== undefined && centralItem.answer !== undefined) {
       // This is a generation
       return (
-        <div className="h-full flex flex-col">
-          <div className="bg-gradient-to-r from-indigo-600 to-purple-700 p-4">
-            <input
-              type="text"
-              value={centralItem.query}
-              readOnly
-              className="w-full bg-white/95 backdrop-blur-sm border-0 p-3 rounded-xl text-gray-900 shadow-inner font-medium"
-              placeholder="Enter your research question..."
-            />
+      <div className="h-full flex flex-col">
+        <div className="bg-gradient-to-r from-indigo-600 to-purple-700 p-4">
+          <input
+        type="text"
+        value={centralItem.query}
+        readOnly
+        className="w-full bg-white/95 backdrop-blur-sm border-0 p-2 rounded-xl text-gray-900 shadow-inner font-medium text-base"
+        placeholder="Enter your research question..."
+        style={{ fontSize: "1rem" }}
+          />
+        </div>
+
+        <div className="flex-1 p-6 flex flex-col overflow-hidden">
+          {/* Make answer box larger by removing metrics and increasing minHeight */}
+          <div className="bg-gradient-to-br from-gray-50 to-white border border-gray-200 rounded-xl p-6 shadow-inner flex-1 overflow-y-auto min-h-[250px]">
+        {isRegenerating ? (
+          <div className="flex items-center justify-center h-full text-indigo-600 space-x-3">
+            <RefreshCw size={28} className="animate-spin" />
+            <span className="text-xl font-medium">Regenerating answer...</span>
+          </div>
+        ) : (
+          <div
+            className="prose prose-lg max-w-none text-gray-800 leading-relaxed"
+            dangerouslySetInnerHTML={{ __html: centralItem.answer }}
+          />
+        )}
           </div>
 
-          <div className="flex-1 p-6 flex flex-col overflow-hidden">
-            <div className="bg-gradient-to-br from-gray-50 to-white border border-gray-200 rounded-xl p-6 shadow-inner flex-1 overflow-y-auto">
-              {isRegenerating ? (
-                <div className="flex items-center justify-center h-full text-indigo-600 space-x-3">
-                  <RefreshCw size={28} className="animate-spin" />
-                  <span className="text-xl font-medium">Regenerating answer...</span>
-                </div>
-              ) : (
-                <div
-                  className="prose prose-lg max-w-none text-gray-800 leading-relaxed"
-                  dangerouslySetInnerHTML={{ __html: centralItem.answer }}
-                />
-              )}
-            </div>
-
-            {/* Metrics Display */}
-            {centralItem.automated_metrics && (
-              <div className="mt-4 p-4 bg-gradient-to-r from-amber-50 to-amber-100 rounded-xl">
-                <h3 className="font-bold text-sm text-amber-800 mb-2">Metrics</h3>
-                <div className="grid grid-cols-4 gap-4">
-                  {Object.entries(centralItem.automated_metrics).map(([metric, value]) => (
-                    <div key={metric} className="text-center">
-                      <div className="text-xs text-amber-600">{metric}</div>
-                      <div className={`font-bold text-amber-700 ${boldMetrics ? 'animate-pulse scale-110' : ''}`}>
-                        {typeof value === 'number' ? value.toFixed(2) : value}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Action Bar */}
-            <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-200">
-              <div className="flex items-center gap-3 text-sm text-gray-600">
-                <span className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full font-medium">
-                  {data.snippets.length} snippets
-                </span>
-                {Object.keys(hiddenCards).length > 0 && (
-                  <button
-                    onClick={() => setHiddenCards({})}
-                    className="bg-orange-100 text-orange-600 px-3 py-1 rounded-full hover:bg-orange-200 transition-colors"
-                  >
-                    {Object.keys(hiddenCards).length} hidden • Show all
-                  </button>
-                )}
-              </div>
-              
-              <button
-                onClick={regenerateAnswer}
-                disabled={isRegenerating}
-                className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 text-white px-6 py-3 rounded-xl font-medium flex items-center gap-2 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:scale-100"
-              >
-                <RefreshCw size={18} className={isRegenerating ? "animate-spin" : ""} />
-                {isRegenerating ? "Regenerating..." : "Regenerate"}
-              </button>
-            </div>
+          {/* Action Bar */}
+          <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-200">
+        <div className="flex items-center gap-3 text-sm text-gray-600">
+          <span className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full font-medium">
+            {data.snippets.length} snippets
+          </span>
+          {Object.keys(hiddenCards).length > 0 && (
+            <button
+          onClick={() => setHiddenCards({})}
+          className="bg-orange-100 text-orange-600 px-3 py-1 rounded-full hover:bg-orange-200 transition-colors"
+            >
+          {Object.keys(hiddenCards).length} hidden • Show all
+            </button>
+          )}
+        </div>
+        
+        <button
+          onClick={regenerateAnswer}
+          disabled={isRegenerating}
+          className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 text-white px-6 py-3 rounded-xl font-medium flex items-center gap-2 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:scale-100"
+        >
+          <RefreshCw size={18} className={isRegenerating ? "animate-spin" : ""} />
+          {isRegenerating ? "Regenerating..." : "Regenerate"}
+        </button>
           </div>
         </div>
+      </div>
       );
-    } else if (centralItem.text) {
+        } else if (centralItem.text) {
       // This is a snippet
       return (
         <div className="h-full flex flex-col p-6">
-          <div className="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-xl p-6 flex-1 overflow-y-auto">
-            <div className="flex items-center gap-2 mb-4">
-              <BookOpen size={20} className="text-blue-600" />
-              <h2 className="text-xl font-bold text-gray-800">{centralItem.id}</h2>
+          <div className="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-xl p-6 flex-1 overflow-hidden flex flex-col">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2 flex-1">
+                <BookOpen size={20} className="text-blue-600" />
+                {/* Only show the source/page fields in the footer, not here */}
+              </div>
+              <button
+                onClick={() => regenerateAnswer()}
+                className="text-indigo-400 hover:text-indigo-600"
+                title="Regenerate"
+              >
+                <RefreshCw size={20} />
+              </button>
             </div>
-            <p className="text-gray-800 leading-relaxed text-lg mb-4">{centralItem.text}</p>
-            <div className="flex gap-4 text-sm text-gray-600">
-              <span className="bg-white/70 px-3 py-1 rounded-lg">{centralItem.source}</span>
-              <span className="bg-white/70 px-3 py-1 rounded-lg">{centralItem.page}</span>
+            {/* Editable text area takes all space */}
+            <div className="flex-1 overflow-y-auto flex flex-col">
+              <textarea
+                value={centralItem.text}
+                onChange={(e) =>
+                  setData((prev) => ({
+                    ...prev,
+                    snippets: prev.snippets.map((snippet) =>
+                      snippet.id === centralItem.id
+                        ? { ...snippet, text: e.target.value }
+                        : snippet
+                    ),
+                  }))
+                }
+                className="w-full h-full bg-white/95 backdrop-blur-sm border-0 p-2 rounded-xl text-gray-900 shadow-inner font-medium resize-none flex-1"
+              />
+            </div>
+            {/* Footer with source and page */}
+            <div className="flex gap-4 text-sm text-gray-600 mt-4">
+              <input
+                type="text"
+                value={centralItem.source}
+                onChange={(e) =>
+                  setData((prev) => ({
+                    ...prev,
+                    snippets: prev.snippets.map((snippet) =>
+                      snippet.id === centralItem.id
+                        ? { ...snippet, source: e.target.value }
+                        : snippet
+                    ),
+                  }))
+                }
+                className="bg-white/70 px-3 py-1 rounded-lg flex-1"
+                placeholder="Source"
+              />
+              <input
+                type="text"
+                value={centralItem.page}
+                onChange={(e) =>
+                  setData((prev) => ({
+                    ...prev,
+                    snippets: prev.snippets.map((snippet) =>
+                      snippet.id === centralItem.id
+                        ? { ...snippet, page: e.target.value }
+                        : snippet
+                    ),
+                  }))
+                }
+                className="bg-white/70 px-3 py-1 rounded-lg flex-1"
+                placeholder="Page"
+              />
             </div>
           </div>
         </div>
