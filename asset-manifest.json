@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/dagstuhl-2025-hackathon/static/css/main.3a1f3eb1.css",
+    "main.js": "/dagstuhl-2025-hackathon/static/js/main.c4766298.js",
+    "index.html": "/dagstuhl-2025-hackathon/index.html",
+    "main.3a1f3eb1.css.map": "/dagstuhl-2025-hackathon/static/css/main.3a1f3eb1.css.map",
+    "main.c4766298.js.map": "/dagstuhl-2025-hackathon/static/js/main.c4766298.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.3a1f3eb1.css",
+    "static/js/main.c4766298.js"
+  ]
+}
