@@ -1,17 +1,28 @@
 import React, { useEffect, useState } from "react";
-import data from "./data/data.json";
+import { X, RefreshCw } from "lucide-react";
 
-
-const COLORS = [
-  "bg-red-50 border-red-200",
-  "bg-green-50 border-green-200", 
+const SNIPPET_COLORS = [
   "bg-blue-50 border-blue-200",
-  "bg-yellow-50 border-yellow-200",
-  "bg-purple-50 border-purple-200",
-  "bg-pink-50 border-pink-200",
-  "bg-teal-50 border-teal-200",
-  "bg-orange-50 border-orange-200"
 ];
+
+const COMMENTARY_COLORS = [
+  "bg-teal-50 border-teal-200"
+];
+
+const METRICS_COLORS = [
+  "bg-red-50 border-red-200"
+];
+
+
+// Helper to generate mock answers
+const generateMockAnswer = (remainingSnippets, mockAnswers) => {
+  const snippetCount = Object.keys(remainingSnippets).length;
+
+  if (snippetCount === 0) return mockAnswers["0"];
+  if (snippetCount <= 2) return mockAnswers["1-2"];
+  if (snippetCount === 3) return mockAnswers["3"];
+  return mockAnswers["4+"];
+};
 
 function App() {
   const [content, setContent] = useState({
@@ -19,103 +30,285 @@ function App() {
     snippets: {},
     answer: ""
   });
+  const [isRegenerating, setIsRegenerating] = useState(false);
 
+  // Load data.json from public folder
   useEffect(() => {
-    setContent(data);
+    fetch("./data.json")
+      .then((res) => res.json())
+      .then((data) => {
+        setContent(data);
+      })
+      .catch((err) => {
+        console.error("Error loading data.json:", err);
+      });
   }, []);
 
-  const snippetEntries = Object.entries(content.snippets || {});
-  
-  // Create positioned snippets for Talmud-style layout
-  const positionedSnippets = snippetEntries.map(([refId, snippets], idx) => ({
+  const deleteSnippet = (refId) => {
+    setContent((prev) => {
+      const newSnippets = { ...prev.snippets };
+      delete newSnippets[refId];
+      return {
+        ...prev,
+        snippets: newSnippets
+      };
+    });
+  };
+
+  // (removed duplicate regenerateAnswer declaration)
+
+const snippetEntries = Object.entries(content.snippets || {}).map(
+  ([refId, snippets]) => ({
+    type: "snippet",
     refId,
-    snippets,
-    color: COLORS[idx % COLORS.length]
-  }));
+    snippets
+  })
+);
 
-  // Split snippets into different sides
-  const leftSnippets = positionedSnippets.slice(0, Math.ceil(positionedSnippets.length / 4));
-  const topSnippets = positionedSnippets.slice(Math.ceil(positionedSnippets.length / 4), Math.ceil(positionedSnippets.length / 2));
-  const rightSnippets = positionedSnippets.slice(Math.ceil(positionedSnippets.length / 2), Math.ceil(3 * positionedSnippets.length / 4));
-  const bottomSnippets = positionedSnippets.slice(Math.ceil(3 * positionedSnippets.length / 4));
+const commentaryEntries = (content.commentary || []).map((c) => ({
+  type: "commentary",
+  data: c
+}));
 
-  const renderSnippetBox = ({ refId, snippets, color }) => (
-    <div
-      key={refId}
-      className={`${color} border-2 p-3 text-xs leading-tight h-full flex flex-col`}
-      style={{
-        fontSize: '11px',
-        lineHeight: '1.3'
-      }}
-    >
-      <h3 className="font-bold text-xs mb-2 text-gray-800 border-b border-gray-300 pb-1">
-        Reference: {refId}
-      </h3>
-      <div className="flex-1 overflow-y-auto">
-        {snippets.map((snippet, i) => (
-          <div key={i} className="mb-2 last:mb-0">
-            <p className="mb-1 text-gray-700">{snippet.text}</p>
-            <p className="text-xs text-gray-500 italic">
-              Source: {snippet.source}, Page: {snippet.page}
-            </p>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+const metricsEntry = content.automated_metrics
+  ? [
+      {
+        type: "metrics",
+        data: content.automated_metrics
+      }
+    ]
+  : [];
+
+// Merge and shuffle
+const mergedEntries = [...snippetEntries, ...commentaryEntries, ...metricsEntry].sort(
+  () => Math.random() - 0.5
+);
+
+// Assign colors
+const positionedEntries = mergedEntries.map((entry, idx) => {
+  if (entry.type === "snippet") {
+    return {
+      ...entry,
+      color: SNIPPET_COLORS[idx % SNIPPET_COLORS.length]
+    };
+  }
+  if (entry.type === "metrics") {
+    return {
+      ...entry,
+      color: METRICS_COLORS[idx % METRICS_COLORS.length]
+    };
+  }
+  return {
+    ...entry,
+    color: COMMENTARY_COLORS[idx % COMMENTARY_COLORS.length]
+  };
+});
+
+const leftEntries = positionedEntries.slice(0, Math.ceil(positionedEntries.length / 4));
+const topEntries = positionedEntries.slice(Math.ceil(positionedEntries.length / 4), Math.ceil(positionedEntries.length / 2));
+const rightEntries = positionedEntries.slice(Math.ceil(positionedEntries.length / 2), Math.ceil(3 * positionedEntries.length / 4));
+const bottomEntries = positionedEntries.slice(Math.ceil(3 * positionedEntries.length / 4));
+
+// (removed duplicate renderBox definition)
+
+  // State to track bolding of metrics values
+  const [boldMetrics, setBoldMetrics] = useState(false);
+
+  // Helper to randomize metrics
+  const randomizeMetrics = (metrics) => {
+    const randomized = {};
+    for (const [key, value] of Object.entries(metrics)) {
+      // Only randomize numeric values
+      if (typeof value === "number") {
+        const factor = 0.6 + Math.random() * 0.3; // 0.6 - 0.9
+        randomized[key] = Math.round(value * factor * 100) / 100;
+      } else {
+        randomized[key] = value;
+      }
+    }
+    return randomized;
+  };
+
+  const regenerateAnswer = async () => {
+    setIsRegenerating(true);
+
+    // Mock API delay
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    const newAnswer = generateMockAnswer(content.snippets, content.mockAnswers);
+
+    // Randomize metrics if present
+    let newMetrics = content.automated_metrics
+      ? randomizeMetrics(content.automated_metrics)
+      : undefined;
+
+    setContent((prev) => ({
+      ...prev,
+      answer: newAnswer,
+      automated_metrics: newMetrics || prev.automated_metrics,
+    }));
+
+    // Bold metrics for 5 seconds
+    if (newMetrics) {
+      setBoldMetrics(true);
+      setTimeout(() => setBoldMetrics(false), 5000);
+    }
+
+    setIsRegenerating(false);
+  };
 
   return (
-    <div className="h-screen w-screen bg-gradient-to-br from-amber-50 to-orange-50 overflow-hidden">
-      {/* Main Talmud-style grid layout */}
+    <div className="h-screen w-screen bg-gradient-to-br from-orange-50 to-white-50 overflow-hidden">
       <div className="h-full w-full grid grid-cols-5 grid-rows-5 gap-0 p-4">
-        
-        {/* Top row */}
         <div className="col-span-1 row-span-1"></div>
-        <div className="col-span-3 row-span-1 flex gap-1">
-          {topSnippets.map(renderSnippetBox)}
-        </div>
+        <div className="col-span-3 row-span-1 flex gap-1">{topEntries.map(renderBox)}</div>
         <div className="col-span-1 row-span-1"></div>
-        
-        {/* Middle rows */}
-        <div className="col-span-1 row-span-3 flex flex-col gap-1">
-          {leftSnippets.map(renderSnippetBox)}
-        </div>
-        
-        {/* Center - Main content */}
-        <div className="col-span-3 row-span-3 bg-white border-4 border-amber-300 flex flex-col">
-          {/* Query section */}
-          <div className="flex-1 p-4 border-b-2 border-amber-200">
-            <h1 className="text-lg font-bold mb-3 text-center text-amber-800 border-b border-amber-300 pb-2">
-              User Query
-            </h1>
-            <div className="bg-amber-50 border border-amber-200 p-3 rounded text-sm text-gray-800 text-center leading-relaxed">
-              {content.query}
+
+        <div className="col-span-1 row-span-3 flex flex-col gap-1">{leftEntries.map(renderBox)}</div>
+
+        <div className="col-span-3 row-span-3 bg-white border-4 border-amber-300 flex flex-col rounded-lg shadow-sm">
+          {/* Query Box */}
+          <div className="p-4 border-b-2 border-amber-200">
+            <input
+              type="text"
+              value={content.query}
+              // disabled
+              className="w-full bg-white border border-amber-300 p-3 rounded-md text-sm text-gray-900 shadow-sm"
+            />
+          </div>
+
+          {/* Answer Box */}
+          <div className="flex-1 p-4 flex flex-col">
+            <div className="bg-amber-50 border border-amber-200 p-4 rounded text-sm text-gray-800 leading-relaxed overflow-y-auto flex-1 prose max-w-none custom-prose">
+              {isRegenerating ? (
+                <div className="flex items-center justify-center h-full text-amber-600 space-x-2">
+                  <RefreshCw size={20} className="animate-spin" />
+                  <span>Regenerating answer based on available snippets...</span>
+                </div>
+              ) : (
+                <div
+                  className="prose max-w-none custom-prose"
+                  dangerouslySetInnerHTML={{ __html: content.answer }}
+                />
+              )}
+            </div>
+
+            {/* Actions */}
+            <div className="flex items-center justify-end mt-4">
+              <button
+                onClick={regenerateAnswer}
+                disabled={isRegenerating}
+                className="bg-amber-600 hover:bg-amber-700 disabled:bg-amber-300 text-white px-4 py-2 rounded text-sm flex items-center gap-2 transition-colors"
+                title="Regenerate answer based on current snippets"
+              >
+                <RefreshCw size={16} className={isRegenerating ? "animate-spin" : ""} />
+                {isRegenerating ? "Regenerating..." : "Regenerate"}
+              </button>
             </div>
           </div>
-          
-          {/* Answer section */}
-          <div className="flex-1 p-4">
-<div
-  className="bg-amber-50 border border-amber-200 p-3 rounded text-sm text-gray-800 leading-relaxed overflow-y-auto h-full"
-  dangerouslySetInnerHTML={{ __html: content.answer }}
-></div>
-          </div>
         </div>
-        
-        <div className="col-span-1 row-span-3 flex flex-col gap-1">
-          {rightSnippets.map(renderSnippetBox)}
-        </div>
-        
-        {/* Bottom row */}
+
+        <div className="col-span-1 row-span-3 flex flex-col gap-1">{rightEntries.map(renderBox)}</div>
+
         <div className="col-span-1 row-span-1"></div>
-        <div className="col-span-3 row-span-1 flex gap-1">
-          {bottomSnippets.map(renderSnippetBox)}
-        </div>
+        <div className="col-span-3 row-span-1 flex gap-1">{bottomEntries.map(renderBox)}</div>
         <div className="col-span-1 row-span-1"></div>
-        
       </div>
     </div>
   );
+
+  // Patch renderBox to bold metrics if boldMetrics is true
+  function renderBox(entry) {
+    if (entry.type === "metrics") {
+      return (
+        <div
+          key="automated-metrics"
+          className={`${entry.color} border-2 p-3 text-xs leading-tight h-full flex flex-col`}
+          style={{ fontSize: "11px", lineHeight: "1.3" }}
+        >
+          <h3 className="font-bold text-xs mb-2 text-gray-800 border-b border-gray-300 pb-1">
+            Automated Metrics
+          </h3>
+          <div className="flex-1 overflow-y-auto">
+            {Object.entries(entry.data).map(([metric, value]) => (
+              <div key={metric} className="mb-1">
+                <span className="font-semibold text-gray-700">{metric}:</span>{" "}
+                <span
+                  className={`text-gray-600${boldMetrics ? " font-bold" : ""}`}
+                >
+                  {value}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+    // ...rest of renderBox unchanged
+    if (entry.type === "snippet") {
+      return (
+        <div
+          key={entry.refId}
+          className={`${entry.color} border-2 p-3 text-xs leading-tight h-full flex flex-col relative group`}
+          style={{ fontSize: "11px", lineHeight: "1.3" }}
+        >
+          <button
+            onClick={() => deleteSnippet(entry.refId)}
+            className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 z-10"
+            title="Delete this reference"
+          >
+            <X size={12} />
+          </button>
+
+          <h4 className="font-bold text-xs mb-2 text-gray-800 border-b border-gray-300 pb-1 pr-6">
+            Reference: {entry.refId}
+          </h4>
+          <div className="flex-1 overflow-y-auto">
+            {entry.snippets.map((snippet, i) => (
+              <div key={i} className="mb-2 last:mb-0">
+                <p className="mb-1 text-gray-700">{snippet.text}</p>
+                <p className="text-xs text-gray-500 italic">
+                  Source: {snippet.source}, Page: {snippet.page}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    if (entry.type === "commentary") {
+      return (
+        <div
+          key={`commentary-${entry.data.id}`}
+          className={`${entry.color} border-2 p-3 text-xs leading-tight h-full flex flex-col`}
+          style={{ fontSize: "11px", lineHeight: "1.3" }}
+        >
+          <h3 className="font-bold text-xs mb-2 text-gray-800 border-b border-gray-300 pb-1">
+            Commentary (Grade {entry.data.grade})
+          </h3>
+          <div className="flex-1 overflow-y-auto">
+            <p className="text-gray-700">{entry.data.comment}</p>
+          </div>
+          <div className="mt-2 flex items-center gap-2">
+            <button
+              className="hover:bg-green-600 text-white px-2 py-1 rounded text-xs flex items-center gap-1"
+              title="Thumb up"
+            >
+              👍
+            </button>
+            <button
+              className="hover:bg-red-600 text-white px-2 py-1 rounded text-xs flex items-center gap-1"
+              title="Thumb down"
+            >
+              👎
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return null;
+  }
 }
 
 export default App;
