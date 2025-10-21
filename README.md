@@ -4,7 +4,28 @@ Retrieval-augmented generation (RAG) systems promise factually grounded answers,
 We present *Talmud-IR*, a novel user interface inspired by the dialogic structure of the Talmud. It visualizes RAG outputs as a central text surrounded by layers of evidence, commentary, and meta-assessment, enabling sustained human--LLM discussion about system quality and failure priorities. The prototype supports comparative RAG evaluation, collaborative exploration of "unknown unknowns," and pedagogical use for teaching critical reading of AI-generated content.
 
 
+
+### Central UI Elements
+
+
 ![](images/Talmud-IR-screenshot.png)
+
+
+The **Talmud-IR** prototype adopts the layout of a Talmudic page, transforming evaluation into a structured, multi-voiced dialogue. The interface centers on a query--response pair produced by a RAG system and surrounds it with layers of supporting information and commentary.
+
+-   **Central text (Mishnah):** the user query and the system's generated answer.
+
+-   **Inner margins:** retrieved snippets that provide evidential grounding, highlighting faithful or contradictory citations.
+
+-   **Outer margins (Gemara):** threaded discussions among human experts and LLM-based assessors reflecting on correctness, completeness, tone, or omissions. Comments can reference specific spans of text or earlier remarks, forming a living discourse.
+
+-   **Super-commentaries:** a meta-layer aggregating evaluation metrics such as nugget coverage or citation validity, summarizing consensus across assessors.
+
+The prototype is implemented as a lightweight web application that links textual spans to snippets and commentaries. Selecting a phrase in the central response highlights corresponding evidence; hovering over snippets reveals linked commentary. A sidebar records earlier discussions so recurring issues can be revisited, mirroring how later scholars build upon prior interpretations.
+
+The UI should be tailored to the particular evaluation use case at hand.  For instance,  it can integrate with Nugget-based Evaluation systems to visualize nugget-based metrics alongside qualitative commentary. An alternative configurations invert this hierarchy: a cited document may appear at the center, surrounded by multiple RAG responses that interpret or misinterpret it. This view supports comparative studies of hallucination and evidence selection.
+
+By unifying interpretative discussion with quantitative measures, the system reframes evaluation as an ongoing, collaborative conversation.
 
 ## Build and Run Instructions
 
