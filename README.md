@@ -4,7 +4,7 @@ Retrieval-augmented generation (RAG) systems promise factually grounded answers,
 We present *Talmud-IR*, a novel user interface inspired by the dialogic structure of the Talmud. It visualizes RAG outputs as a central text surrounded by layers of evidence, commentary, and meta-assessment, enabling sustained human--LLM discussion about system quality and failure priorities. The prototype supports comparative RAG evaluation, collaborative exploration of "unknown unknowns," and pedagogical use for teaching critical reading of AI-generated content.
 
 
-
+![](images/Talmud-IR-screenshot.png)
 
 ## Build and Run Instructions
 
