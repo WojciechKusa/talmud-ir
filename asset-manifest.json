@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/dagstuhl-2025-hackathon/static/css/main.84ffd2e9.css",
-    "main.js": "/dagstuhl-2025-hackathon/static/js/main.2fde51ff.js",
-    "index.html": "/dagstuhl-2025-hackathon/index.html",
-    "main.84ffd2e9.css.map": "/dagstuhl-2025-hackathon/static/css/main.84ffd2e9.css.map",
-    "main.2fde51ff.js.map": "/dagstuhl-2025-hackathon/static/js/main.2fde51ff.js.map"
+    "main.css": "/talmud-ir/static/css/main.84ffd2e9.css",
+    "main.js": "/talmud-ir/static/js/main.aa93ae66.js",
+    "index.html": "/talmud-ir/index.html",
+    "main.84ffd2e9.css.map": "/talmud-ir/static/css/main.84ffd2e9.css.map",
+    "main.aa93ae66.js.map": "/talmud-ir/static/js/main.aa93ae66.js.map"
   },
   "entrypoints": [
     "static/css/main.84ffd2e9.css",
-    "static/js/main.2fde51ff.js"
+    "static/js/main.aa93ae66.js"
   ]
 }
