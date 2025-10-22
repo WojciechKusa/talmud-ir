@@ -36,25 +36,86 @@ function App() {
   const [hiddenCards, setHiddenCards] = useState({});
 
   useEffect(() => {
-    fetch("./new.jsonl")
-      .then((res) => res.text())
+    console.log("Attempting to fetch new.jsonl...");
+    // Try multiple possible paths
+    const possiblePaths = [
+      `${process.env.PUBLIC_URL}/new.jsonl`,
+      "/new.jsonl",
+      "./new.jsonl"
+    ];
+    
+    const tryFetch = async (paths) => {
+      for (const path of paths) {
+        try {
+          console.log(`Trying path: ${path}`);
+          const res = await fetch(path);
+          if (res.ok) {
+            const text = await res.text();
+            // Check if it's actually JSON, not HTML
+            if (text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) {
+              console.error(`Path ${path} returned HTML instead of JSONL`);
+              continue;
+            }
+            console.log("Success! Found the file at:", path);
+            return text;
+          }
+        } catch (err) {
+          console.error(`Failed to fetch from ${path}:`, err);
+        }
+      }
+      throw new Error("Could not load new.jsonl from any path");
+    };
+    
+    tryFetch(possiblePaths)
+    tryFetch(possiblePaths)
       .then((text) => {
-        const lines = text.split('\n').filter(Boolean);
-        const parsed = lines.map(line => {
+        console.log("File loaded, size:", text.length, "bytes");
+        console.log("First 100 chars:", text.substring(0, 100));
+        
+        const lines = text.split('\n').filter(line => line.trim());
+        console.log("Number of lines:", lines.length);
+        
+        const parsed = lines.map((line, idx) => {
           try {
             return JSON.parse(line);
           } catch (e) {
+            console.error(`Failed to parse line ${idx}:`, line.substring(0, 50), e);
             return null;
           }
         }).filter(Boolean);
+        
+        console.log("Successfully parsed samples:", parsed.length);
         setSamples(parsed);
+        
         if (parsed.length > 0) {
-          setSelectedSampleId(parsed[0].central_block_id || "sample_1");
+          console.log("First sample central_block_id:", parsed[0].central_block_id);
+          setSelectedSampleId(parsed[0].central_block_id);
           setData(parsed[0]);
         }
       })
       .catch((err) => {
-        console.error("Error loading data.jsonl:", err);
+        console.error("FETCH FAILED - Error loading new.jsonl:", err);
+        console.error("Make sure:");
+        console.error("1. File is named exactly 'new.jsonl' (case sensitive)");
+        console.error("2. File is in the public/ folder");
+        console.error("3. Dev server was restarted after adding the file");
+        
+        // Fallback: use hardcoded sample data
+        const fallbackData = {
+          central_block_id: "gen_001",
+          generations: [{
+            query: "Sample Question",
+            answer: "This is a sample answer. Make sure new.jsonl is in the public/ folder.",
+            id: "gen_001",
+            automated_metrics: {MAP: 0.75, Factuality: 0.8, Coherence: 0.9, Relevance: 0.85}
+          }],
+          snippets: [],
+          commentaries: [],
+          metrics: []
+        };
+        setSamples([fallbackData]);
+        setSelectedSampleId("gen_001");
+        setData(fallbackData);
       });
   }, []);
 
