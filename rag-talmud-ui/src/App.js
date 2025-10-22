@@ -35,7 +35,7 @@ function App() {
   const [showSelector, setShowSelector] = useState(false);
   const [hiddenCards, setHiddenCards] = useState({});
 
-  useEffect(() => {
+useEffect(() => {
     console.log("Attempting to fetch new.jsonl...");
     // Try multiple possible paths
     const possiblePaths = [
@@ -489,7 +489,7 @@ function App() {
       // This is a generation
       return (
       <div className="h-full flex flex-col">
-        <div className="bg-gradient-to-r from-indigo-600 to-purple-700 p-4">
+        <div className="bg-gradient-to-r from-indigo-600 to-purple-700 p-4 flex items-center gap-2">
           <input
         type="text"
         value={centralItem.query}
@@ -498,10 +498,20 @@ function App() {
         placeholder="Enter your research question..."
         style={{ fontSize: "1rem" }}
           />
+          {isRegenerating ? (
+        <RefreshCw size={22} className="ml-2 text-indigo-600 animate-spin" />
+          ) : (
+        <button
+          onClick={regenerateAnswer}
+          className="ml-2 text-indigo-400 hover:text-indigo-600"
+          title="Regenerate"
+        >
+          <RefreshCw size={22} />
+        </button>
+          )}
         </div>
 
         <div className="flex-1 p-6 flex flex-col overflow-hidden">
-          {/* Make answer box larger by removing metrics and increasing minHeight */}
           <div className="bg-gradient-to-br from-gray-50 to-white border border-gray-200 rounded-xl p-6 shadow-inner flex-1 overflow-y-auto min-h-[250px]">
         {isRegenerating ? (
           <div className="flex items-center justify-center h-full text-indigo-600 space-x-3">
@@ -514,32 +524,6 @@ function App() {
             dangerouslySetInnerHTML={{ __html: centralItem.answer }}
           />
         )}
-          </div>
-
-          {/* Action Bar */}
-          <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-200">
-        <div className="flex items-center gap-3 text-sm text-gray-600">
-          <span className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full font-medium">
-            {data.snippets.length} snippets
-          </span>
-          {Object.keys(hiddenCards).length > 0 && (
-            <button
-          onClick={() => setHiddenCards({})}
-          className="bg-orange-100 text-orange-600 px-3 py-1 rounded-full hover:bg-orange-200 transition-colors"
-            >
-          {Object.keys(hiddenCards).length} hidden • Show all
-            </button>
-          )}
-        </div>
-        
-        <button
-          onClick={regenerateAnswer}
-          disabled={isRegenerating}
-          className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 text-white px-6 py-3 rounded-xl font-medium flex items-center gap-2 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:scale-100"
-        >
-          <RefreshCw size={18} className={isRegenerating ? "animate-spin" : ""} />
-          {isRegenerating ? "Regenerating..." : "Regenerate"}
-        </button>
           </div>
         </div>
       </div>
