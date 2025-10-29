@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import HamburgerMenu from "./components/ui/HamburgerMenu";
 import SampleSelector from "./components/ui/SampleSelector";
-import { X, RefreshCw, Eye, EyeOff, ChevronDown, ChevronUp, Star, ThumbsUp, ThumbsDown, BarChart3, BookOpen, MessageSquare, Minimize2, Maximize2 } from "lucide-react";
+import { X, RefreshCw, Eye, EyeOff, ChevronDown, ChevronUp, Star, ThumbsUp, ThumbsDown, BarChart3, BookOpen, Sparkles, Wand2, Bot, MessageSquare, Minimize2, Maximize2 } from "lucide-react";
 
 const SNIPPET_COLORS = [
   "bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:from-blue-100 hover:to-blue-150",
@@ -431,7 +431,7 @@ useEffect(() => {
         >
           <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-1">
-          <MessageSquare size={14} className="text-purple-600" />
+          <Bot size={18} className="text-purple-600" />
           {isCompact && entry.data.query.length > 100 ? `${entry.data.query.slice(0, 100)}...` : entry.data.query}
         </div>
         <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -488,45 +488,50 @@ useEffect(() => {
     if (centralItem.query !== undefined && centralItem.answer !== undefined) {
       // This is a generation
       return (
-      <div className="h-full flex flex-col">
-        <div className="bg-gradient-to-r from-indigo-600 to-purple-700 p-4 flex items-center gap-2">
+        <div className="h-full flex flex-col">
+          {/* Header & Search Box */}
+          <div className="bg-gradient-to-r from-pink-100 via-purple-100 to-pink-100 p-6 flex items-center gap-3 border-b border-pink-200 shadow-sm">
+        <div className="flex items-center gap-2 w-full">
+          <Bot size={22} className="text-pink-500" />
           <input
-        type="text"
-        value={centralItem.query}
-        readOnly
-        className="w-full bg-white/95 backdrop-blur-sm border-0 p-2 rounded-xl text-gray-900 shadow-inner font-medium text-base"
-        placeholder="Enter your research question..."
-        style={{ fontSize: "1rem" }}
+            type="text"
+            value={centralItem.query}
+            readOnly
+            className="w-full bg-white/95 border border-pink-300 focus:border-pink-400 p-3 rounded-xl text-gray-900 shadow-inner font-semibold text-lg transition-all"
+            placeholder="Enter your research question..."
+            style={{ fontSize: "1.1rem", letterSpacing: "0.01em" }}
           />
-          {isRegenerating ? (
-        <RefreshCw size={22} className="ml-2 text-indigo-600 animate-spin" />
-          ) : (
-        <button
-          onClick={regenerateAnswer}
-          className="ml-2 text-indigo-400 hover:text-indigo-600"
-          title="Regenerate"
-        >
-          <RefreshCw size={22} />
-        </button>
-          )}
         </div>
-
-        <div className="flex-1 p-6 flex flex-col overflow-hidden">
-          <div className="bg-gradient-to-br from-gray-50 to-white border border-gray-200 rounded-xl p-6 shadow-inner flex-1 overflow-y-auto min-h-[250px]">
         {isRegenerating ? (
-          <div className="flex items-center justify-center h-full text-indigo-600 space-x-3">
-            <RefreshCw size={28} className="animate-spin" />
-            <span className="text-xl font-medium">Regenerating answer...</span>
-          </div>
+          <RefreshCw size={24} className="ml-3 text-pink-500 animate-spin" />
         ) : (
-          <div
-            className="prose prose-lg max-w-none text-gray-800 leading-relaxed"
-            dangerouslySetInnerHTML={{ __html: centralItem.answer }}
-          />
+          <button
+            onClick={regenerateAnswer}
+            className="ml-3 bg-pink-100 hover:bg-pink-200 border border-pink-300 rounded-full p-2 transition-colors"
+            title="Regenerate"
+          >
+            <RefreshCw size={20} className="text-pink-600" />
+          </button>
         )}
           </div>
+
+          {/* Answer Box */}
+          <div className="flex-1 p-6 flex flex-col overflow-hidden">
+        <div className="bg-gradient-to-br from-white via-pink-50 to-purple-50 border border-pink-200 rounded-xl p-6 shadow-inner flex-1 overflow-y-auto min-h-[250px]">
+          {isRegenerating ? (
+            <div className="flex items-center justify-center h-full text-pink-600 space-x-3">
+          <RefreshCw size={28} className="animate-spin" />
+          <span className="text-xl font-medium">Regenerating answer...</span>
+            </div>
+          ) : (
+            <div
+          className="prose prose-lg max-w-none text-gray-800 leading-relaxed"
+          dangerouslySetInnerHTML={{ __html: centralItem.answer }}
+            />
+          )}
         </div>
-      </div>
+          </div>
+        </div>
       );
         } else if (centralItem.text) {
       // This is a snippet
