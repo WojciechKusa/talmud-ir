@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/talmud-ir/static/css/main.84ffd2e9.css",
-    "main.js": "/talmud-ir/static/js/main.aa93ae66.js",
+    "main.css": "/talmud-ir/static/css/main.825c9eb1.css",
+    "main.js": "/talmud-ir/static/js/main.d9a1878d.js",
     "index.html": "/talmud-ir/index.html",
-    "main.84ffd2e9.css.map": "/talmud-ir/static/css/main.84ffd2e9.css.map",
-    "main.aa93ae66.js.map": "/talmud-ir/static/js/main.aa93ae66.js.map"
+    "main.825c9eb1.css.map": "/talmud-ir/static/css/main.825c9eb1.css.map",
+    "main.d9a1878d.js.map": "/talmud-ir/static/js/main.d9a1878d.js.map"
   },
   "entrypoints": [
-    "static/css/main.84ffd2e9.css",
-    "static/js/main.aa93ae66.js"
+    "static/css/main.825c9eb1.css",
+    "static/js/main.d9a1878d.js"
   ]
 }
