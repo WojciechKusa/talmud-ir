@@ -53,7 +53,7 @@ This project is built using React and styled with Tailwind CSS. Follow the steps
 1. Clone the repository:
     ```bash
     git clone https://github.com/your-username/dagstuhl-2025-hackathon.git
-    cd dagstuhl-2025-hackathon
+    cd rag-talmud-ui
     ```
 
 2. Install dependencies:
