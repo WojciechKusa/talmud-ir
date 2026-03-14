@@ -1,5 +1,7 @@
 # Demo:	Talmud-IR: A Talmud-Inspired Interface for Discussing RAG Response Quality
 
+Our prototype is hosted via [GitHub Pages](https://wojciechkusa.github.io/talmud-ir/).
+
 ### Abstract
 Retrieval-augmented generation (RAG) systems promise factually grounded answers, yet evaluating their quality remains difficult. Automated metrics and LLM-as-judge approaches offer scalability but risk circularity, benchmark leakage, and loss of diversity. Human assessors, meanwhile, often struggle to notice subtle omissions or hallucinations when responses appear linguistically fluent and confident. 
 
@@ -41,7 +43,7 @@ By unifying interpretative discussion with quantitative measures, the system ref
 
 ## Build and Run Instructions
 
-This project is built using React and styled with Tailwind CSS. Follow the steps below to set up, build, and run the project.
+This project is built using React and styled with Tailwind CSS. Follow the steps below to set up, build, and run the project. A running deployment is also available via [GitHub Pages](https://wojciechkusa.github.io/talmud-ir/).
 
 ### Prerequisites
 1. Ensure you have [Node.js](https://nodejs.org/) installed (version 16 or higher is recommended).
