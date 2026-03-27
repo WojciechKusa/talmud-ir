@@ -2,6 +2,8 @@
 
 Our prototype is hosted via [GitHub Pages](https://wojciechkusa.github.io/talmud-ir/).
 
+This demo is described in our [ECIR 2026 paper](https://doi.org/10.1007/978-3-032-21321-1_21).
+
 ### Abstract
 Retrieval-augmented generation (RAG) systems promise factually grounded answers, yet evaluating their quality remains difficult. Automated metrics and LLM-as-judge approaches offer scalability but risk circularity, benchmark leakage, and loss of diversity. Human assessors, meanwhile, often struggle to notice subtle omissions or hallucinations when responses appear linguistically fluent and confident. 
 
@@ -95,3 +97,22 @@ Tailwind CSS is configured in the `tailwind.config.js` file. You can customize i
 ### Additional Notes
 - Ensure you have a `.env` file with the required environment variables if applicable.
 - Refer to the project's documentation for more details on features and usage.
+
+## Please Cite
+
+Please cite our [ECIR 2026 paper](https://doi.org/10.1007/978-3-032-21321-1_21) as:
+
+```
+@InProceedings{kusa:2026,
+  address =                  {Cham, Switzerland},
+  author =                   {Wojciech Kusa and Niklas Deckers and Maik Fr{\"o}be and Laura Dietz and Birte Platow and Mark Sanderson},
+  booktitle =                {Advances in Information Retrieval. 48th European Conference on IR Research (ECIR 2026)},
+  doi =                      {10.1007/978-3-032-21321-1_21},
+  month =                    mar,
+  publisher =                {Springer Nature},
+  series =                   {Lecture Notes in Computer Science},
+  site =                     {Delft, The Netherlands},
+  title =                    {{Talmud-IR: A Talmud-Inspired Interface for Discussing RAG Response Quality}},
+  year =                     2026
+}
+```
